@@ -65,6 +65,24 @@ const menu = [
     link: "/analytics",
   },
   {
+    heading: "Configuration",
+  },
+  {
+    icon: "setting-fill",
+    text: "Machine",
+    link: "/machine",
+  },
+  {
+    icon: "activity-round-fill",
+    text: "Sales",
+    link: "/sales",
+  },
+  {
+    icon: "growth-fill",
+    text: "Analytics",
+    link: "/analytics",
+  },
+  {
     heading: "Pre-built Pages",
   },
   {
