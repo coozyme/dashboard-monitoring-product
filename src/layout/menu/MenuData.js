@@ -73,6 +73,21 @@ const menu = [
     link: "/machine",
   },
   {
+    icon: "users-fill",
+    text: "User Manage",
+    active: false,
+    subMenu: [
+      {
+        text: "User List - Default",
+        link: "/user-list-default",
+      },
+      {
+        text: "User List - Regular",
+        link: "/user-list-regular",
+      },
+    ],
+  },
+  {
     icon: "activity-round-fill",
     text: "Sales",
     link: "/sales",

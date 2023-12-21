@@ -583,6 +583,62 @@ export const productData = [
   //   },
 ];
 
+export const MachineData = [
+  {
+    id: 1,
+    kode: "MCH001",
+    name: "Machine Solvet",
+    pic: "Agus",
+    status: false
+  },
+  {
+    id: 2,
+    kode: "MCH002",
+    name: "Machine Solvet",
+    pic: "Budi",
+    status: true
+  },
+  {
+    id: 3,
+    kode: "MCH003",
+    name: "Machine Solvet",
+    pic: "Teguh",
+    status: false
+  },
+  {
+    id: 4,
+    kode: "MCH004",
+    name: "Machine Water Based",
+    pic: "Bagus",
+    status: true
+  },
+  {
+    id: 5,
+    kode: "MCH005",
+    name: "Machine Water Based",
+    pic: "Indra",
+    status: false
+  },
+  {
+    id: 6,
+    kode: "MCH006",
+    name: "Machine Water Based",
+    pic: "Ferdi",
+    status: false
+  },
+];
+
+export const MachineStatusData = [
+  {
+    id: 1,
+    status: true
+  },
+  {
+    id: 2,
+    status: false
+  },
+]
+
 export const categoryOptions = [
   {
     value: "Gadget",

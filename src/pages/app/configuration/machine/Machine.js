@@ -19,7 +19,7 @@ import {
    PaginationComponent,
 } from "../../../../components/Component";
 import { Card, DropdownItem, UncontrolledDropdown, DropdownMenu, DropdownToggle, Badge } from "reactstrap";
-import { productData, categoryOptions } from "./ProductData";
+import { productData, categoryOptions, MachineData, MachineStatusData } from "./ProductData";
 import SimpleBar from "simplebar-react";
 import { useForm } from "react-hook-form";
 import ProductH from "../../../../images/product/h.png";
@@ -28,18 +28,14 @@ import { Modal, ModalBody } from "reactstrap";
 import { RSelect } from "../../../../components/Component";
 
 const Machine = () => {
-   const [data, setData] = useState(productData);
+   const [data, setData] = useState(MachineData);
    const [sm, updateSm] = useState(false);
+   const [statusMachine, setStatusMachine] = useState(false);
    const [formData, setFormData] = useState({
+      kode: "",
       name: "",
-      img: null,
-      sku: "",
-      price: 0,
-      salePrice: 0,
-      stock: 0,
-      category: [],
-      fav: false,
-      check: false,
+      pic: "",
+      status: statusMachine
    });
    const [editId, setEditedId] = useState();
    const [view, setView] = useState({
@@ -60,12 +56,12 @@ const Machine = () => {
    // Changing state value when searching name
    useEffect(() => {
       if (onSearchText !== "") {
-         const filteredObject = productData.filter((item) => {
-            return item.sku.toLowerCase().includes(onSearchText.toLowerCase());
+         const filteredObject = MachineData.filter((item) => {
+            return item.kode.toLowerCase().includes(onSearchText.toLowerCase());
          });
          setData([...filteredObject]);
       } else {
-         setData([...productData]);
+         setData([...MachineData]);
       }
    }, [onSearchText]);
 
@@ -79,7 +75,7 @@ const Machine = () => {
       setFormData({
          name: "",
          img: null,
-         sku: "",
+         kode: "",
          price: 0,
          salePrice: 0,
          stock: 0,
@@ -90,52 +86,43 @@ const Machine = () => {
       reset({});
    };
 
-   const onFormSubmit = (form) => {
-      const { title, price, salePrice, sku, stock } = form;
+   const onFormSubmit = (event) => {
+      const { kode, name, pic, status } = formData;
 
       let submittedData = {
-         id: data.length + 1,
-         name: title,
-         img: files.length > 0 ? files[0].preview : ProductH,
-         sku: sku,
-         price: price,
-         salePrice: salePrice,
-         stock: stock,
-         category: formData.category,
-         fav: false,
-         check: false,
+         kode: kode,
+         name: name,
+         pic: pic,
+         status: statusMachine
       };
+
+      console.log('LOG-submittedData', submittedData, statusMachine)
+
       setData([submittedData, ...data]);
-      setView({ open: false });
-      setFiles([]);
-      resetForm();
+      event.preventDefault()
+      // setView({ open: false });
+      // setFiles([]);
+      // resetForm();
    };
 
-   const onEditSubmit = () => {
-      let submittedData;
+   const onEditSubmit = (event) => {
       let newItems = data;
+      const { kode, name, pic, status } = formData;
+
       let index = newItems.findIndex((item) => item.id === editId);
 
-      newItems.forEach((item) => {
-         if (item.id === editId) {
-            submittedData = {
-               id: editId,
-               name: formData.name,
-               img: files.length > 0 ? files[0].preview : item.img,
-               sku: formData.sku,
-               price: formData.price,
-               salePrice: formData.salePrice,
-               stock: formData.stock,
-               category: formData.category,
-               fav: false,
-               check: false,
-            };
-         }
-      });
-      newItems[index] = submittedData;
-      //setData(newItems);
+      let editedData = {
+         kode: kode,
+         name: name,
+         pic: pic,
+         status: statusMachine
+      };
+      console.log('LOG-editedData', editedData, status, statusMachine)
+      newItems[index] = editedData;
+
       resetForm();
       setView({ edit: false, add: false });
+      event.preventDefault()
    };
 
    // function that loads the want to editted data
@@ -144,19 +131,14 @@ const Machine = () => {
          if (item.id === id) {
             setFormData({
                name: item.name,
-               img: item.img,
-               sku: item.sku,
-               price: item.price,
-               salePrice: item.salePrice,
-               stock: item.stock,
-               category: item.category,
-               fav: false,
-               check: false,
+               kode: item.kode,
+               pic: item.pic,
+               status: item.status
             });
          }
       });
       setEditedId(id);
-      setFiles([]);
+      // setFiles([]);
       setView({ add: false, edit: true });
    };
 
@@ -188,14 +170,14 @@ const Machine = () => {
    };
 
    // function to delete a product
-   const deleteProduct = (id) => {
+   const deleteMachine = (id) => {
       let defaultData = data;
       defaultData = defaultData.filter((item) => item.id !== id);
       setData([...defaultData]);
    };
 
    // function to delete the seletected item
-   const selectorDeleteProduct = () => {
+   const selectordeleteMachine = () => {
       let newData;
       newData = data.filter((item) => item.check !== true);
       setData([...newData]);
@@ -233,6 +215,7 @@ const Machine = () => {
 
    return (
       <React.Fragment>
+         {console.log('LOG-DATA', data)}
          <Head title="Machine List"></Head>
          <Content>
             <BlockHead size="sm">
@@ -345,7 +328,7 @@ const Machine = () => {
                                  <span>Kode Mesin</span>
                               </DataTableRow>
                               <DataTableRow>
-                                 <span>Name Mesin</span>
+                                 <span>Nama Mesin</span>
                               </DataTableRow>
                               <DataTableRow>
                                  <span>PIC</span>
@@ -386,7 +369,7 @@ const Machine = () => {
                                                       href="#remove"
                                                       onClick={(ev) => {
                                                          ev.preventDefault();
-                                                         selectorDeleteProduct();
+                                                         selectordeleteMachine();
                                                       }}
                                                    >
                                                       <Icon name="trash"></Icon>
@@ -414,10 +397,10 @@ const Machine = () => {
                            </DataTableHead>
                            {currentItems.length > 0
                               ? currentItems.map((item) => {
-                                 const categoryList = []
-                                 item.category.forEach((currentElement) => {
-                                    categoryList.push(currentElement.label)
-                                 })
+                                 // const categoryList = []
+                                 // item.category.forEach((currentElement) => {
+                                 //    categoryList.push(currentElement.label)
+                                 // })
                                  return (
                                     <DataTableItem key={item.id}>
                                        {/* <DataTableRow className="nk-tb-col-check">
@@ -433,26 +416,29 @@ const Machine = () => {
                                              <label className="custom-control-label" htmlFor={item.id + "uid1"}></label>
                                           </div>
                                        </DataTableRow> */}
+                                       <DataTableRow>
+                                          <span className="tb-sub">{item.kode}</span>
+                                       </DataTableRow>
                                        <DataTableRow size="sm">
-                                          <span className="tb-product">
-                                             {/* <img src={item.img ? item.img : ProductH} alt="product" className="thumb" /> */}
-                                             <span className="title">{item.name}</span>
-                                          </span>
+                                          {/* <span className="tb-sub">   */}
+                                          {/* <img src={item.img ? item.img : ProductH} alt="product" className="thumb" /> */}
+                                          <span className="tb-sub">{item.name}</span>
+                                          {/* </span> */}
                                        </DataTableRow>
                                        <DataTableRow>
-                                          <span className="tb-sub">{item.sku}</span>
+                                          <span className="tb-sub">{item.pic}</span>
                                        </DataTableRow>
-                                       <DataTableRow>
-                                          <span className="tb-sub">$ {item.price}</span>
-                                       </DataTableRow>
+                                       {/* <DataTableRow>
+                                          <span className="tb-sub">{item.status}</span>
+                                       </DataTableRow> */}
                                        <DataTableRow>
                                           <Badge
                                              className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
                                              color={
-                                                "Delivered" === "Delivered" ? "success" : "warning"
+                                                item.status == true ? "success" : "warning"
                                              }
                                           >
-                                             Active
+                                             {item.status == true ? "READY" : "NOT READY"}
                                           </Badge>
                                        </DataTableRow>
                                        {/* <DataTableRow size="md">
@@ -473,10 +459,26 @@ const Machine = () => {
                                           </div>
                                        </DataTableRow> */}
                                        <DataTableRow className="nk-tb-col-tools">
-                                          <Button color="primary" size="sm" className="btn btn-dim">
+                                          <Button
+                                             color="primary"
+                                             size="sm"
+                                             className="btn btn-dim"
+                                             onClick={(ev) => {
+                                                ev.preventDefault();
+                                                onEditClick(item.id);
+                                                toggle("edit");
+                                             }}
+                                          >
                                              <Icon name="pen-alt-fill"></Icon>
                                           </Button>
-                                          <Button color="danger" size="sm" className="btn btn-dim">
+                                          <Button
+                                             color="danger"
+                                             size="sm"
+                                             className="btn btn-dim"
+                                             onClick={(ev) => {
+                                                ev.preventDefault();
+                                                deleteMachine(item.id);
+                                             }}>
                                              <Icon name="trash-alt"></Icon>
                                           </Button>
 
@@ -527,7 +529,7 @@ const Machine = () => {
                                                                href="#remove"
                                                                onClick={(ev) => {
                                                                   ev.preventDefault();
-                                                                  deleteProduct(item.id);
+                                                                  deleteMachine(item.id);
                                                                }}
                                                             >
                                                                <Icon name="trash"></Icon>
@@ -555,7 +557,7 @@ const Machine = () => {
                               />
                            ) : (
                               <div className="text-center">
-                                 <span className="text-silent">No products found</span>
+                                 <span className="text-silent">No Machine found</span>
                               </div>
                            )}
                         </div>
@@ -563,7 +565,7 @@ const Machine = () => {
                   </div>
                </Card>
             </Block>
-
+            {/*  FORM UPDATE*/}
             <Modal isOpen={view.edit} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
                <ModalBody>
                   <a href="#cancel" className="close">
@@ -577,14 +579,14 @@ const Machine = () => {
                      ></Icon>
                   </a>
                   <div className="p-2">
-                     <h5 className="title">Update Product</h5>
+                     <h5 className="title">Update Machine</h5>
                      <div className="mt-4">
-                        <form noValidate onSubmit={handleSubmit(onEditSubmit)}>
+                        <form noValidate onSubmit={onEditSubmit} id="form-update-machine">
                            <Row className="g-3">
-                              <Col size="12">
+                              {/* <Col size="12">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="product-title">
-                                       Product Title
+                                    <label className="form-label" htmlFor="machine-name">
+                                       Nama Mesin
                                     </label>
                                     <div className="form-control-wrap">
                                        <input
@@ -598,72 +600,103 @@ const Machine = () => {
                                        {errors.name && <span className="invalid">{errors.name.message}</span>}
                                     </div>
                                  </div>
-                              </Col>
+                              </Col> */}
                               <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="regular-price">
-                                       Regular Price
+                                    <label className="form-label" htmlFor="machine-kode" id="form-update-machine">
+                                       Kode Mesin
                                     </label>
                                     <div className="form-control-wrap">
                                        <input
-                                          type="number"
-                                          {...register('price', { required: "This is required" })}
+                                          id="machine-kode"
+                                          name="machine-kode"
+                                          type="text"
+                                          {...register('kode', { required: "This is required" })}
                                           className="form-control"
-                                          value={formData.price}
-                                          onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
-                                       {errors.price && <span className="invalid">{errors.price.message}</span>}
+                                          value={formData.kode}
+                                          onChange={(e) => setFormData({ ...formData, kode: e.target.value })} />
+                                       {errors.kode && <span className="invalid">{errors.kode.message}</span>}
                                     </div>
                                  </div>
                               </Col>
                               <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="sale-price">
-                                       Sale Price
+                                    <label className="form-label" htmlFor="machine-name" id="form-update-machine">
+                                       Nama Mesin
                                     </label>
                                     <div className="form-control-wrap">
                                        <input
-                                          type="number"
-                                          className="form-control"
-                                          {...register('salePrice')}
-                                          value={formData.salePrice}
-                                          onChange={(e) => setFormData({ ...formData, salePrice: e.target.value })} />
-                                       {errors.salePrice && <span className="invalid">{errors.salePrice.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="stock">
-                                       Stock
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <input
-                                          type="number"
-                                          className="form-control"
-                                          {...register('stock', { required: "This is required" })}
-                                          value={formData.stock}
-                                          onChange={(e) => setFormData({ ...formData, stock: e.target.value })} />
-                                       {errors.stock && <span className="invalid">{errors.stock.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="SKU">
-                                       SKU
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <input
+                                          id="machine-name"
+                                          name="machine-name"
                                           type="text"
                                           className="form-control"
-                                          {...register('sku', { required: "This is required" })}
-                                          value={formData.sku}
-                                          onChange={(e) => setFormData({ ...formData, sku: e.target.value })} />
-                                       {errors.sku && <span className="invalid">{errors.sku.message}</span>}
+                                          {...register('name', { required: "This is required" })}
+                                          value={formData.name}
+                                          onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                                       {errors.name && <span className="invalid">{errors.name.message}</span>}
                                     </div>
                                  </div>
                               </Col>
-                              <Col size="12">
+                              <Col md="6">
+                                 <div className="form-group">
+                                    <label className="form-label" htmlFor="machine-pic" id="form-update-machine">
+                                       PIC
+                                    </label>
+                                    <div className="form-control-wrap">
+                                       <input
+                                          id="machine-pic"
+                                          name="machine-pic"
+                                          type="text"
+                                          className="form-control"
+                                          {...register('pic', { required: "This is required" })}
+                                          value={formData.pic}
+                                          onChange={(e) => setFormData({ ...formData, pic: e.target.value })} />
+                                       {errors.pic && <span className="invalid">{errors.pic.message}</span>}
+                                    </div>
+                                 </div>
+                              </Col>
+                              <Col md="6">
+                                 <div className="form-group">
+                                    <label className="form-label" >
+                                       Status Mesin
+                                    </label>
+                                    <div className="form-control-wrap">
+                                       <UncontrolledDropdown>
+                                          <DropdownToggle className="dropdown-toggle dropdown-indicator btn btn-sm btn-outline-light btn-white">
+                                             {statusMachine == true ? "READY" : "NOT READY"}
+                                          </DropdownToggle>
+                                          <DropdownMenu end className="dropdown-menu-xs">
+                                             <ul className="link-list-opt no-bdr">
+                                                <li className={statusMachine == true ? "active" : ""}>
+                                                   <DropdownItem
+                                                      href="#dropdownitem"
+                                                      onClick={(e) => {
+                                                         setStatusMachine(true);
+                                                         e.preventDefault();
+                                                      }}
+
+                                                   >
+                                                      <span>READY</span>
+                                                   </DropdownItem>
+                                                </li>
+                                                <li className={statusMachine == false ? "active" : ""}>
+                                                   <DropdownItem
+                                                      href="#dropdownitem"
+                                                      onClick={(e) => {
+                                                         setStatusMachine(false);
+                                                         e.preventDefault();
+                                                      }}
+                                                   >
+                                                      <span>NOT READY</span>
+                                                   </DropdownItem>
+                                                </li>
+                                             </ul>
+                                          </DropdownMenu>
+                                       </UncontrolledDropdown>
+                                    </div>
+                                 </div>
+                              </Col>
+                              {/* <Col size="12">
                                  <div className="form-group">
                                     <label className="form-label" htmlFor="category">
                                        Category
@@ -679,8 +712,8 @@ const Machine = () => {
                                        {errors.category && <span className="invalid">{errors.category.message}</span>}
                                     </div>
                                  </div>
-                              </Col>
-                              <Col size="6">
+                              </Col> */}
+                              {/* <Col size="6">
                                  <div className="form-group">
                                     <label className="form-label" htmlFor="category">
                                        Product Image
@@ -689,8 +722,8 @@ const Machine = () => {
                                        <img src={formData.img} alt=""></img>
                                     </div>
                                  </div>
-                              </Col>
-                              <Col size="6">
+                              </Col> */}
+                              {/* <Col size="6">
                                  <Dropzone onDrop={(acceptedFiles) => handleDropChange(acceptedFiles)}>
                                     {({ getRootProps, getInputProps }) => (
                                        <section>
@@ -714,12 +747,12 @@ const Machine = () => {
                                        </section>
                                     )}
                                  </Dropzone>
-                              </Col>
+                              </Col> */}
 
                               <Col size="12">
                                  <Button color="primary" type="submit">
                                     <Icon className="plus"></Icon>
-                                    <span>Update Product</span>
+                                    <span>Update Machine</span>
                                  </Button>
                               </Col>
                            </Row>
@@ -743,21 +776,21 @@ const Machine = () => {
                   </a>
                   <div className="nk-modal-head">
                      <h4 className="nk-modal-title title">
-                        Product <small className="text-primary">#{formData.sku}</small>
+                        Product <small className="text-primary">#{formData.kode}</small>
                      </h4>
-                     <img src={formData.img} alt="" />
+                     {/* <img src={formData.img} alt="" /> */}
                   </div>
                   <div className="nk-tnx-details mt-sm-3">
                      <Row className="gy-3">
                         <Col lg={6}>
-                           <span className="sub-text">Product Name</span>
+                           <span className="sub-text">Nama Mesin</span>
                            <span className="caption-text">{formData.name}</span>
                         </Col>
                         <Col lg={6}>
-                           <span className="sub-text">Product Price</span>
-                           <span className="caption-text">$ {formData.price}</span>
+                           <span className="sub-text">Kode Mesin</span>
+                           <span className="caption-text">$ {formData.kode}</span>
                         </Col>
-                        <Col lg={6}>
+                        {/* <Col lg={6}>
                            <span className="sub-text">Product Category</span>
                            <span className="caption-text">
                               {formData.category.map((item, index) => (
@@ -766,16 +799,18 @@ const Machine = () => {
                                  </Badge>
                               ))}
                            </span>
-                        </Col>
+                        </Col> */}
                         <Col lg={6}>
-                           <span className="sub-text">Stock</span>
-                           <span className="caption-text"> {formData.stock}</span>
+                           <span className="sub-text">PIC</span>
+                           <span className="caption-text"> {formData.pic}</span>
                         </Col>
                      </Row>
                   </div>
                </ModalBody>
             </Modal>
 
+            {/* FORM ADD */}
+            {/* {console.log("LOG-DATA", formData.name, formData.kode, formData.pic, formData.status)} */}
             <SimpleBar
                className={`nk-add-product toggle-slide toggle-slide-right toggle-screen-any ${view.add ? "content-active" : ""
                   }`}
@@ -784,17 +819,18 @@ const Machine = () => {
                   <BlockHeadContent>
                      <BlockTitle tag="h5">Add Machine</BlockTitle>
                      <BlockDes>
-                        <p>Add information or update product.</p>
+                        <p>Add information or update Machine.</p>
                      </BlockDes>
                   </BlockHeadContent>
                </BlockHead>
                <Block>
-                  <form onSubmit={handleSubmit(onFormSubmit)}>
+                  {/* <form onSubmit={ () => handleSubmit(onFormSubmit)}> */}
+                  <form onSubmit={onFormSubmit} id="form-add-machine">
                      <Row className="g-3">
-                        <Col size="12">
+                        {/* <Col size="12">
                            <div className="form-group">
-                              <label className="form-label" htmlFor="product-title">
-                                 Product Title
+                              <label className="form-label" htmlFor="machine-name">
+                                 Nama Mesin
                               </label>
                               <div className="form-control-wrap">
                                  <input
@@ -808,72 +844,112 @@ const Machine = () => {
                                  {errors.name && <span className="invalid">{errors.name.message}</span>}
                               </div>
                            </div>
-                        </Col>
+                        </Col> */}
                         <Col md="6">
                            <div className="form-group">
-                              <label className="form-label" htmlFor="regular-price">
-                                 Regular Price
+                              <label className="form-label" htmlFor="machine-kode" for="machine-kode" id="form-add-machine">
+                                 Kode Mesin
                               </label>
                               <div className="form-control-wrap">
                                  <input
-                                    type="number"
-                                    {...register('price', { required: "This is required" })}
+                                    id="machine-kode"
+                                    name="machine-kode"
+                                    type="text"
                                     className="form-control"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
-                                 {errors.price && <span className="invalid">{errors.price.message}</span>}
+                                    {...register('kode', { required: "This is required" })}
+                                    value={formData.kode}
+                                    onChange={(e) => setFormData({ ...formData, kode: e.target.value })} />
+                                 {errors.kode && <span className="invalid">{errors.kode.message}</span>}
                               </div>
                            </div>
                         </Col>
                         <Col md="6">
                            <div className="form-group">
-                              <label className="form-label" htmlFor="sale-price">
-                                 Sale Price
+                              <label className="form-label" htmlFor="machine-name" id="form-add-machine">
+                                 Nama Mesin
                               </label>
                               <div className="form-control-wrap">
                                  <input
-                                    type="number"
+                                    id="machine-name"
+                                    name="machine-name"
+                                    type="text"
+                                    {...register('name', { required: "This is required" })}
                                     className="form-control"
-                                    {...register('salePrice')}
-                                    value={formData.salePrice}
-                                    onChange={(e) => setFormData({ ...formData, salePrice: e.target.value })} />
-                                 {errors.salePrice && <span className="invalid">{errors.salePrice.message}</span>}
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                                 {errors.name && <span className="invalid">{errors.name.message}</span>}
                               </div>
                            </div>
                         </Col>
                         <Col md="6">
                            <div className="form-group">
-                              <label className="form-label" htmlFor="stock">
-                                 Stock
+                              <label className="form-label" htmlFor="machine-pic" id="form-add-machine">
+                                 PIC
                               </label>
                               <div className="form-control-wrap">
                                  <input
-                                    type="number"
+                                    id="machine-pic"
+                                    name="machine-pic"
+                                    type="text"
                                     className="form-control"
-                                    {...register('stock', { required: "This is required" })}
-                                    value={formData.stock}
-                                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })} />
-                                 {errors.stock && <span className="invalid">{errors.stock.message}</span>}
+                                    {...register('pic', { required: "This is required" })}
+                                    value={formData.pic}
+                                    onChange={(e) => setFormData({ ...formData, pic: e.target.value })} />
+                                 {errors.pic && <span className="invalid">{errors.pic.message}</span>}
                               </div>
                            </div>
                         </Col>
                         <Col md="6">
                            <div className="form-group">
-                              <label className="form-label" htmlFor="SKU">
-                                 SKU
+                              <label className="form-label" id="form-add-machine">
+                                 Status Mesin
                               </label>
                               <div className="form-control-wrap">
-                                 <input
+                                 {/* <input
                                     type="text"
                                     className="form-control"
                                     {...register('sku', { required: "This is required" })}
-                                    value={formData.sku}
-                                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })} />
-                                 {errors.sku && <span className="invalid">{errors.sku.message}</span>}
+                                    value={formData.kode}
+                                    onChange={(e) => setFormData({ ...formData, kode: e.target.value })} />
+                                 {errors.sku && <span className="invalid">{errors.kode.message}</span>} */}
+                                 <div className="card-tools">
+                                    <UncontrolledDropdown>
+                                       <DropdownToggle className="dropdown-toggle dropdown-indicator btn btn-sm btn-outline-light btn-white">
+                                          {statusMachine == true ? "READY" : "NOT READY"}
+                                       </DropdownToggle>
+                                       <DropdownMenu end className="dropdown-menu-xs">
+                                          <ul className="link-list-opt no-bdr">
+                                             <li className={statusMachine == true ? "active" : ""}>
+                                                <DropdownItem
+                                                   href="#dropdownitem"
+                                                   onClick={(e) => {
+                                                      e.preventDefault();
+                                                      setStatusMachine(true);
+                                                   }}
+
+                                                >
+                                                   <span>READY</span>
+                                                </DropdownItem>
+                                             </li>
+                                             <li className={statusMachine == false ? "active" : ""}>
+                                                <DropdownItem
+                                                   href="#dropdownitem"
+                                                   onClick={(e) => {
+                                                      e.preventDefault();
+                                                      setStatusMachine(false);
+                                                   }}
+                                                >
+                                                   <span>NOT READY</span>
+                                                </DropdownItem>
+                                             </li>
+                                          </ul>
+                                       </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                 </div>
                               </div>
                            </div>
                         </Col>
-                        <Col size="12">
+                        {/* <Col size="12">
                            <div className="form-group">
                               <label className="form-label" htmlFor="category">
                                  Category
@@ -890,8 +966,8 @@ const Machine = () => {
                                  {errors.category && <span className="invalid">{errors.category.message}</span>}
                               </div>
                            </div>
-                        </Col>
-                        <Col size="12">
+                        </Col> */}
+                        {/* <Col size="12">
                            <Dropzone onDrop={(acceptedFiles) => handleDropChange(acceptedFiles)}>
                               {({ getRootProps, getInputProps }) => (
                                  <section>
@@ -912,7 +988,7 @@ const Machine = () => {
                                  </section>
                               )}
                            </Dropzone>
-                        </Col>
+                        </Col> */}
 
                         <Col size="12">
                            <Button color="primary" type="submit">
@@ -927,7 +1003,7 @@ const Machine = () => {
 
             {view.add && <div className="toggle-overlay" onClick={toggle}></div>}
          </Content>
-      </React.Fragment>
+      </React.Fragment >
    );
 };
 
