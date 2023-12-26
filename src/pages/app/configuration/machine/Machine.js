@@ -26,6 +26,9 @@ import ProductH from "../../../../images/product/h.png";
 import Dropzone from "react-dropzone";
 import { Modal, ModalBody } from "reactstrap";
 import { RSelect } from "../../../../components/Component";
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3000");
 
 const Machine = () => {
    const [data, setData] = useState(MachineData);
@@ -48,6 +51,14 @@ const Machine = () => {
    const [itemPerPage] = useState(7);
    const [files, setFiles] = useState([]);
 
+   useEffect(() => {
+      socket.on("connection", () => {
+         console.log('log-connect')
+      });
+      socket.on("get_menus", (data) => {
+         console.log('log-get-menus', data)
+      });
+   }, [socket]);
    //scroll off when sidebar shows
    useEffect(() => {
       view.add ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
