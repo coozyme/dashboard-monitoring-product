@@ -27,11 +27,14 @@ import Dropzone from "react-dropzone";
 import { Modal, ModalBody } from "reactstrap";
 import { RSelect } from "../../../../components/Component";
 import io from "socket.io-client";
+import axios from "axios";
+import { BaseURL } from "../../../../config/config";
 
-const socket = io.connect("http://localhost:3000");
+// const socket = io.connect("http://localhost:3000");
 
 const Machine = () => {
-   const [data, setData] = useState(MachineData);
+   const MachineDatas = MachineData
+   const [data, setData] = useState([]);
    const [sm, updateSm] = useState(false);
    const [statusMachine, setStatusMachine] = useState(false);
    const [formData, setFormData] = useState({
@@ -51,14 +54,14 @@ const Machine = () => {
    const [itemPerPage] = useState(7);
    const [files, setFiles] = useState([]);
 
-   useEffect(() => {
-      socket.on("connection", () => {
-         console.log('log-connect')
-      });
-      socket.on("get_menus", (data) => {
-         console.log('log-get-menus', data)
-      });
-   }, [socket]);
+   // useEffect(() => {
+   //    socket.on("connection", () => {
+   //       console.log('log-connect')
+   //    });
+   //    socket.on("get_menus", (data) => {
+   //       console.log('log-get-menus', data)
+   //    });
+   // }, [socket]);
    //scroll off when sidebar shows
    useEffect(() => {
       view.add ? document.body.classList.add("toggle-shown") : document.body.classList.remove("toggle-shown");
@@ -67,14 +70,33 @@ const Machine = () => {
    // Changing state value when searching name
    useEffect(() => {
       if (onSearchText !== "") {
-         const filteredObject = MachineData.filter((item) => {
+         const filteredObject = data.filter((item) => {
             return item.kode.toLowerCase().includes(onSearchText.toLowerCase());
          });
          setData([...filteredObject]);
       } else {
-         setData([...MachineData]);
+         setData([...data]);
       }
    }, [onSearchText]);
+
+   const fetchData = async () => {
+      // You can await here
+      console.log('LOG-BaseURL', BaseURL)
+      try {
+         await axios.get(`${BaseURL}/machine`).then((response) => {
+            console.log('LOG-axios', response.data.data)
+            setData(response.data.data)
+         }).catch((error) => {
+            console.log('LOG-axios-err', error)
+         })
+
+      } catch (error) {
+         console.log('LOG-Err-fetchData', error)
+      }
+   }
+   useEffect(() => {
+      fetchData();
+   }, []);
 
    // function to close the form modal
    const onFormCancel = () => {
@@ -345,6 +367,9 @@ const Machine = () => {
                                  <span>PIC</span>
                               </DataTableRow>
                               <DataTableRow>
+                                 <span>Rata Rata Produksi</span>
+                              </DataTableRow>
+                              <DataTableRow>
                                  <span>Status</span>
                               </DataTableRow>
                               {/* <DataTableRow size="md">
@@ -438,6 +463,9 @@ const Machine = () => {
                                        </DataTableRow>
                                        <DataTableRow>
                                           <span className="tb-sub">{item.pic}</span>
+                                       </DataTableRow>
+                                       <DataTableRow>
+                                          <span className="tb-sub">{item.averageProduce}</span>
                                        </DataTableRow>
                                        {/* <DataTableRow>
                                           <span className="tb-sub">{item.status}</span>
