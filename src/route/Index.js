@@ -133,7 +133,10 @@ import Success from "../pages/auth/Success";
 
 import Layout from "../layout/Index";
 import LayoutNoSidebar from "../layout/Index-nosidebar";
+
 import Machine from "../pages/app/configuration/machine/Machine";
+import EmployeePage from "../pages/app/employee";
+import { EmployeeContextProvider } from "../pages/app/employee/EmployeeContext";
 
 const Router = () => {
   const location = useLocation();
@@ -192,6 +195,9 @@ const Router = () => {
 
         {/*Configuration Pages*/}
         <Route path="machine" element={<Machine />}></Route>
+        <Route element={<EmployeeContextProvider />} >
+          <Route path="employee-list" element={<EmployeePage />}></Route>
+        </Route>
 
         {/*Pre-built Pages*/}
         <Route path="project-card" element={<ProjectCardPage />}></Route>

@@ -119,7 +119,7 @@ const Machine = () => {
       reset({});
    };
 
-   const onFormSubmit = (event) => {
+   const onFormSubmit = async (event) => {
       const { kode, name, pic, status } = formData;
 
       let submittedData = {
@@ -130,7 +130,10 @@ const Machine = () => {
       };
 
       console.log('LOG-submittedData', submittedData, statusMachine)
+      await axios.post(`${BaseURL}/machine`, submittedData).then((response) => {
+         console.log('LOG-axios', response.data.data)
 
+      })
       setData([submittedData, ...data]);
       event.preventDefault()
       // setView({ open: false });

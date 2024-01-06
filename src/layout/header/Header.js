@@ -10,7 +10,7 @@ import ChatDropdown from "./dropdown/chat/Chat";
 import { useTheme, useThemeUpdate } from '../provider/Theme';
 
 const Header = ({ fixed, className, ...props }) => {
-  
+
   const theme = useTheme();
   const themeUpdate = useThemeUpdate();
 
@@ -35,17 +35,17 @@ const Header = ({ fixed, className, ...props }) => {
           <div className="nk-header-brand d-xl-none">
             <Logo />
           </div>
-          <div className="nk-header-search ms-3 ms-xl-0">
+          {/* <div className="nk-header-search ms-3 ms-xl-0">
             <HeaderSearch />
-          </div>
+          </div> */}
           <div className="nk-header-tools">
             <ul className="nk-quick-nav">
-              <li className="chats-dropdown hide-mb-xs">
+              {/* <li className="chats-dropdown hide-mb-xs">
                 <ChatDropdown />
               </li>
               <li className="notification-dropdown me-n1">
                 <Notification />
-              </li>
+              </li> */}
               <li className="user-dropdown">
                 <User />
               </li>

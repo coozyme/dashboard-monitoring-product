@@ -65,6 +65,22 @@ const menu = [
     link: "/analytics",
   },
   {
+    heading: "Orders Process",
+  },
+  {
+    icon: "card-view",
+    text: "Order Productions",
+    link: "/order-productions",
+  },
+  {
+    heading: "Productions",
+  },
+  {
+    icon: "card-view",
+    text: "Productions Report",
+    link: "/report-productions",
+  },
+  {
     heading: "Configuration",
   },
   {
@@ -78,8 +94,8 @@ const menu = [
     active: false,
     subMenu: [
       {
-        text: "User List - Default",
-        link: "/user-list-default",
+        text: "Employee List",
+        link: "/employee-list",
       },
       {
         text: "User List - Regular",

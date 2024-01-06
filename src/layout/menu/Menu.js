@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import menu from "./MenuData";
+// import menu from "./MenuData";
+import menu from "./MenuMonev";
 import { NavLink, Link } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
@@ -185,6 +186,7 @@ const PanelItem = ({ icon, link, text, subPanel, index, data, setMenuData, ...pr
     "nk-menu-item": true,
   });
 
+  // if (data === menu) {
   if (data === menu) {
     return (
       <li className={menuItemClass}>
