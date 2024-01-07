@@ -134,9 +134,10 @@ import Success from "../pages/auth/Success";
 import Layout from "../layout/Index";
 import LayoutNoSidebar from "../layout/Index-nosidebar";
 
+import { EmployeeContextProvider } from "../pages/app/employee/EmployeeContext";
 import Machine from "../pages/app/configuration/machine/Machine";
 import EmployeePage from "../pages/app/employee";
-import { EmployeeContextProvider } from "../pages/app/employee/EmployeeContext";
+import OrderProduction from "../pages/app/production/OrderProduction";
 
 const Router = () => {
   const location = useLocation();
@@ -192,6 +193,9 @@ const Router = () => {
             <Route path="customer-details/:customerId" element={<EcomCustomerDetails />}></Route>y
           </Route>
         </Route>
+
+        {/* Monev Route */}
+        <Route path="/order-production" element={<OrderProduction />}></Route>
 
         {/*Configuration Pages*/}
         <Route path="machine" element={<Machine />}></Route>

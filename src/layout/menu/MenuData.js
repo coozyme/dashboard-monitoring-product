@@ -69,16 +69,16 @@ const menu = [
   },
   {
     icon: "card-view",
-    text: "Order Productions",
-    link: "/order-productions",
+    text: "Order Production",
+    link: "/order-production",
   },
   {
     heading: "Productions",
   },
   {
     icon: "card-view",
-    text: "Productions Report",
-    link: "/report-productions",
+    text: "Production Report",
+    link: "/report-production",
   },
   {
     heading: "Configuration",
