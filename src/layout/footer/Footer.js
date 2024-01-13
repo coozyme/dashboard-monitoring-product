@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="nk-footer-wrap">
           <div className="nk-footer-copyright">
             {" "}
-            &copy; {new Date().getFullYear()}
+            &copy; {new Date().getFullYear()} Sistem Monitoring Evaluasi
             {/* {new Date().getFullYear() > 2020 ? ` - ${new Date().getFullYear()}` : "" */}
           </div>
           {/* <div className="nk-footer-links">

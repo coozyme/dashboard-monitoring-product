@@ -803,7 +803,7 @@ const Machine = () => {
                   </div>
                </ModalBody>
             </Modal>
-
+            {/* FORM NOT USED */}
             <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
                <ModalBody>
                   <a href="#cancel" className="close">

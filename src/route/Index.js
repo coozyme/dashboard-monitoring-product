@@ -138,6 +138,9 @@ import { EmployeeContextProvider } from "../pages/app/employee/EmployeeContext";
 import Machine from "../pages/app/configuration/machine/Machine";
 import EmployeePage from "../pages/app/employee";
 import OrderProduction from "../pages/app/production/OrderProduction";
+import OrderProductionReport from "../pages/app/production/OrderProductionReport";
+import CreateDailyReportProduction from "../pages/app/production-report/CreateDailyReport";
+import DetailReportProduction from "../pages/app/production-report/DetailReport";
 
 const Router = () => {
   const location = useLocation();
@@ -195,7 +198,10 @@ const Router = () => {
         </Route>
 
         {/* Monev Route */}
-        <Route path="/order-production" element={<OrderProduction />}></Route>
+        <Route path="order-production" element={<OrderProduction />}></Route>
+        <Route path="production-report" element={<OrderProductionReport />}></Route>
+        <Route path="production-report/create-report" element={<CreateDailyReportProduction />}></Route>
+        <Route path="production-report/detail-report" element={<DetailReportProduction />}></Route>
 
         {/*Configuration Pages*/}
         <Route path="machine" element={<Machine />}></Route>

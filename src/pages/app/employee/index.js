@@ -33,10 +33,12 @@ import { Link } from "react-router-dom";
 import { EmployeeContext } from "./EmployeeContext";
 import EditModal from "./EditModal";
 import AddModal from "./AddModal";
+import axios from "axios";
+import { BaseURL } from "../../../config/config";
 
 const EmployeePage = () => {
-   const { contextData } = useContext(EmployeeContext);
-   const [data, setData] = contextData;
+   // const { contextData } = useContext(EmployeeContext);
+   const [data, setData] = useState([]);
 
    const [sm, updateSm] = useState(false);
    const [onSearchText] = useState("");
@@ -65,18 +67,22 @@ const EmployeePage = () => {
 
    // unselects the data on mount
    useEffect(() => {
-      let newData;
-      newData = userDatas.map((item) => {
-         item.checked = false;
-         return item;
-      });
-      setData([...newData]);
+      // let newData;
+      fetchDataEmployee()
+
+
+
+      // newData = userDatas.map((item) => {
+      //    item.checked = false;
+      //    return item;
+      // });
+      // setData([...newData]);
    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
    // Changing state value when searching name
    useEffect(() => {
       if (onSearchText !== "") {
-         const filteredObject = userDatas.filter((item) => {
+         const filteredObject = data.filter((item) => {
             return (
                item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
                item.email.toLowerCase().includes(onSearchText.toLowerCase())
@@ -84,10 +90,33 @@ const EmployeePage = () => {
          });
          setData([...filteredObject]);
       } else {
-         setData([...userDatas]);
+         setData([...data]);
       }
    }, [onSearchText, setData]);
 
+   const fetchDataEmployee = async () => {
+      try {
+         const emp = []
+         const employee = await axios.get(`${BaseURL}/employee`)
+
+         employee.data.data.forEach((item) => {
+            const data = {
+               id: item.id,
+               fullname: item.fullname,
+               username: item.username,
+               role: item.role,
+               roleId: item.roleId,
+               isActive: item.isActive,
+            }
+
+            emp.push(data)
+         })
+         setData(emp)
+      } catch (error) {
+         console.log("LOG-ERROR-fetchDataEmployee: ", error)
+      }
+
+   }
    // function to change the selected property of an item
    const onSelectChange = (e, id) => {
       let newData = data;
@@ -99,11 +128,10 @@ const EmployeePage = () => {
    // function to reset the form
    const resetForm = () => {
       setFormData({
-         name: "",
-         email: "",
-         balance: 0,
-         phone: "",
-         status: "Active",
+         fullname: "",
+         username: "",
+         role: "",
+         roleId: 0,
       });
    };
 
@@ -118,23 +146,26 @@ const EmployeePage = () => {
    };
 
    // submit function to add a new item
-   const onFormSubmit = (submitData) => {
-      const { name, email, balance, phone } = submitData;
-      let submittedData = {
-         id: data.length + 1,
-         avatarBg: "purple",
-         name: name,
-         role: "Customer",
-         email: email,
-         balance: balance,
-         phone: phone,
-         emailStatus: "success",
-         kycStatus: "alert",
-         lastLogin: "10 Feb 2020",
-         status: formData.status,
-         country: "Bangladesh",
-      };
-      setData([submittedData, ...data]);
+   const onFormSubmit = () => {
+      // const { name, email, balance, phone } = submitData;
+      // let submittedData = {
+      //    id: data.length + 1,
+      //    avatarBg: "purple",
+      //    name: name,
+      //    role: "Customer",
+      //    email: email,
+      //    balance: balance,
+      //    phone: phone,
+      //    emailStatus: "success",
+      //    kycStatus: "alert",
+      //    lastLogin: "10 Feb 2020",
+      //    status: formData.status,
+      //    country: "Bangladesh",
+      // };
+
+
+      // setData([submitData, ...data]);
+      fetchDataEmployee()
       resetForm();
       setModal({ edit: false }, { add: false });
    };
@@ -146,31 +177,33 @@ const EmployeePage = () => {
    }
    // submit function to update a new item
    const onEditSubmit = (submitData) => {
-      const { name, email, phone } = submitData;
-      let submittedData;
-      let newitems = data;
-      newitems.forEach((item) => {
-         if (item.id === editId) {
-            submittedData = {
-               id: item.id,
-               avatarBg: item.avatarBg,
-               name: name,
-               image: item.image,
-               role: item.role,
-               email: email,
-               balance: editFormData.balance,
-               phone: phone,
-               emailStatus: item.emailStatus,
-               kycStatus: item.kycStatus,
-               lastLogin: item.lastLogin,
-               status: editFormData.status,
-               country: item.country,
-            };
-         }
-      });
-      let index = newitems.findIndex((item) => item.id === editId);
-      newitems[index] = submittedData;
+      // const { name, email, phone } = submitData;
+      // let submittedData;
+      // let newitems = data;
+      // newitems.forEach((item) => {
+      //    if (item.id === editId) {
+      //       submittedData = {
+      //          id: item.id,
+      //          avatarBg: item.avatarBg,
+      //          name: name,
+      //          image: item.image,
+      //          role: item.role,
+      //          email: email,
+      //          balance: editFormData.balance,
+      //          phone: phone,
+      //          emailStatus: item.emailStatus,
+      //          kycStatus: item.kycStatus,
+      //          lastLogin: item.lastLogin,
+      //          status: editFormData.status,
+      //          country: item.country,
+      //       };
+      //    }
+      // });
+      // let index = newitems.findIndex((item) => item.id === editId);
+      // newitems[index] = submittedData;
       setModal({ edit: false });
+      fetchDataEmployee();
+      resetForm();
    };
 
    // function that loads the want to editted data
@@ -227,7 +260,7 @@ const EmployeePage = () => {
    // Get current list, pagination
    const indexOfLastItem = currentPage * itemPerPage;
    const indexOfFirstItem = indexOfLastItem - itemPerPage;
-   const currentItems = userDatas.slice(indexOfFirstItem, indexOfLastItem);
+   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
    // Change Page
    const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -240,10 +273,10 @@ const EmployeePage = () => {
                <BlockBetween>
                   <BlockHeadContent>
                      <BlockTitle tag="h3" page>
-                        Users Lists
+                        Employee Lists
                      </BlockTitle>
                      <BlockDes className="text-soft">
-                        <p>You have total {totalData} users.</p>
+                        <p>You have total {totalData} employee Account.</p>
                      </BlockDes>
                   </BlockHeadContent>
                   <BlockHeadContent>
@@ -337,8 +370,8 @@ const EmployeePage = () => {
                   </DataTableHead>
                   {/*Head*/}
                   {currentItems.length > 0
-                     ? currentItems.map((item) => (
-                        <DataTableItem key={item.id}>
+                     ? currentItems.map((item, idx) => (
+                        <DataTableItem key={idx}>
                            {/* <DataTableRow className="nk-tb-col-check">
                               <div className="custom-control custom-control-sm custom-checkbox notext">
                                  <input
@@ -355,7 +388,7 @@ const EmployeePage = () => {
                            <DataTableRow>
                               {/* <Link to={`${process.env.PUBLIC_URL}/user-details-regular/${item.id}`}> */}
                               <div className="user-card">
-                                 <UserAvatar theme={item.avatarBg} text={findUpper(item.fullname)} image={item.image}></UserAvatar>
+                                 <UserAvatar theme={item?.avatarBg} text={findUpper(item?.fullname)} image={item?.image}></UserAvatar>
                                  <div className="user-info">
                                     <span className="tb-lead">
                                        {item.fullname} <span className="dot dot-success d-md-none ms-1"></span>
@@ -381,9 +414,11 @@ const EmployeePage = () => {
                                  <li className="nk-tb-action-hidden" onClick={() => {
                                     onEditClick(item.id)
                                     setFormData({
+                                       id: item.id,
                                        fullname: item.fullname,
                                        username: item.username,
                                        role: item.role,
+                                       roleId: item.roleId,
                                        isActive: item.isActive,
                                     })
                                  }}>

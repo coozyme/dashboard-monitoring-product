@@ -43,6 +43,7 @@ const Login = () => {
         );
         window.location.reload();
       }, 1000);
+      fetchDataUser();
     }).catch(err => {
       console.log("LOG-err", err)
 
@@ -50,6 +51,19 @@ const Login = () => {
       setLoading(false);
     })
   };
+
+  const fetchDataUser = async () => {
+    await axios.get(`${BaseURL}/user`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+      }
+    }).then(res => {
+      console.log("LOG-res", res)
+      localStorage.setItem("user", JSON.stringify(res?.data?.data));
+    }).catch(err => {
+      console.log("LOG-err", err)
+    })
+  }
 
   const { register, handleSubmit, formState: { errors } } = useForm();
 

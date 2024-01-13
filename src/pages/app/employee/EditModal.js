@@ -20,6 +20,7 @@ const EditModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterS
   const [roles, setRoles] = useState([]);
 
   const [dataUser, setDataUser] = useState({
+    id: formData?.id,
     fullname: formData?.fullname,
     username: formData?.username,
     role: formData?.role,
@@ -45,37 +46,36 @@ const EditModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterS
       setRoles(newDataRole);
 
 
-      // roles.forEach((data, idx) => {
-      // console.log("LOG-data.title", data.title)
-      // const resultFind = roles.find(({ title }) => title === dataRole.label);
-      // // if (dataRole.label == data.title) {
-      // console.log("LOG-resultFind", resultFind)
-      // setDataRole({
-      //   value: resultFind.id,
-      //   label: resultFind.title,
-      // })
-      // console.log("LOG-roles2", data, idx)
-      // }
-
-      // });
     }).catch((err) => {
       console.log("LOG-err", err)
       AlertMessage()
     });
-
   }
+
+  const onSubmitUpdateEmployee = async (data) => {
+    const payload = {
+      fullname: data.fullname,
+      username: data.username,
+      password: data.password,
+      roleId: dataUser?.roleId,
+      isActive: dataUser?.isActive,
+    }
+
+    console.log("LOG-data", data)
+    await axios.put(`${BaseURL}/employee/update-employee/${dataUser.id}`, payload).then((res) => {
+      console.log("LOG-res", res)
+      closeModal()
+      onSubmit()
+    }).catch((err) => {
+      console.log("LOG-err", err)
+      AlertMessage()
+    });
+  }
+
   useEffect(() => {
     console.log("LOG-formData", formData)
     setDataUser(formData)
     fetchDataRole()
-
-    // const resultFind = roles.find(({ title }) => title === dataRole.label);
-    // if (dataRole.label == data.title) {
-    // console.log("LOG-resultFind", resultFind)
-    // setDataRole({
-    //   value: resultFind.id,
-    //   label: resultFind.title,
-    // })
 
     reset(formData)
   }, [formData]);
@@ -118,9 +118,9 @@ const EditModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterS
           <Icon name="cross-sm"></Icon>
         </a>
         <div className="p-2">
-          <h5 className="title">Update User</h5>
+          <h5 className="title">Update Employee</h5>
           <div className="mt-4">
-            <Form className="row gy-4" onSubmit={handleSubmit(onSubmit)}>
+            <Form className="row gy-4" onSubmit={handleSubmit(onSubmitUpdateEmployee)}>
               <Col md="6">
                 <div className="form-group">
                   <label className="form-label">Fullname</label>
@@ -226,7 +226,7 @@ const EditModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterS
                 <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                   <li>
                     <Button color="primary" size="md" type="submit">
-                      Update User
+                      Submit
                     </Button>
                   </li>
                   <li>

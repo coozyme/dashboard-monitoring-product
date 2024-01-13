@@ -462,6 +462,38 @@ export const unitOptions = [
   { value: "Roll", label: "Roll" },
 ];
 
+export const dataMaterial = [
+  {
+    tanggal: "2021-01-01",
+    issue: 1,
+    notes: "ini notes",
+    material: {
+      name: "Kain",
+      quantity: 100,
+      unit: "Meter",
+    }
+  },
+  {
+    tanggal: "2021-01-01",
+    issue: 1,
+    notes: "ini notes 2",
+    material: {
+      name: "Kain",
+      quantity: 100,
+      unit: "Meter",
+    }
+  },
+  {
+    tanggal: "2021-01-01",
+    issue: 1,
+    notes: "ini notes 3",
+    material: {
+      name: "Kain",
+      quantity: 100,
+      unit: "Meter",
+    }
+  },
+]
 export const statusOptions = [
   { value: "Paid", label: "Paid" },
   { value: "Due", label: "Due" },

@@ -24,12 +24,12 @@ export const checkForm = (formData) => {
 export const findUpper = (string) => {
   let extractedString = [];
 
-  for (var i = 0; i < string.length; i++) {
+  for (var i = 0; i < string?.length; i++) {
     if (string.charAt(i) === string.charAt(i).toUpperCase() && string.charAt(i) !== " ") {
       extractedString.push(string.charAt(i));
     }
   }
-  if (extractedString.length > 1) {
+  if (extractedString?.length > 1) {
     return extractedString[0] + extractedString[1];
   } else {
     return extractedString[0];

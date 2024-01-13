@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"
 import Head from "../../../layout/head/Head";
 import Content from "../../../layout/content/Content";
 import DatePicker from "react-datepicker";
 import { orderData, orderProduction, statusOrderProduction, unitOptions } from "./OrderData";
+import { GetIssueCategory } from "./actions";
 import {
    Block,
    BlockHeadContent,
@@ -26,23 +28,25 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { BaseURL } from "../../../config/config";
 
-const OrderProduction = () => {
+const OrderProductionReport = () => {
+   let navigate = useNavigate()
    const [data, setData] = useState([]);
    const [dataMachine, setDataMachine] = useState([]);
+   const [dataIssue, setDataIssue] = useState([]);
+   const [dataUser, setDataUser] = useState({});
    const [smOption, setSmOption] = useState(false);
    const [formData, setFormData] = useState({
-      dataId: "",
-      orderId: "",
-      customer: "",
-      machineKode: "",
-      machineId: 0,
-      machineName: "",
-      targetDaily: 1000,
-      unit: 'Meter',
-      status: 'OPEN',
-      startProductionDate: '',
-      endProductionDate: ''
+      productionId: false,
+      reportedBy: false,
+      material: "",
+      issueId: false,
+      issueName: "",
+      quantity: 0,
+      unit: "Meter",
+      notes: "",
+      productionDate: "",
    });
+   const [note, setNote] = useState("");
    const [rangeDate, setRangeDate] = useState({
       start: new Date(),
       end: null,
@@ -52,6 +56,7 @@ const OrderProduction = () => {
       details: false,
       edit: false
    });
+   const [startIconDate, setStartIconDate] = useState(new Date());
    const [onSearchText, setSearchText] = useState("");
    const [currentPage, setCurrentPage] = useState(1);
    const [itemPerPage] = useState(7);
@@ -71,9 +76,15 @@ const OrderProduction = () => {
    useEffect(() => {
       fetchDataMachine()
       fetchDataOrderProductions()
+      fetchDataIssueCategories()
       console.log('LOG-ERR-FETCH-DATA-MACHINE', dataMachine)
+      console.log('LOG-ERR-FETCH-DATA-dataIssue', dataIssue)
    }, [])
 
+   useEffect(() => {
+      const data = JSON.parse(localStorage.getItem("user"));
+      setDataUser(data);
+   }, [dataUser])
 
    const fetchDataMachine = async () => {
       const mesin = []
@@ -98,6 +109,30 @@ const OrderProduction = () => {
       setDataMachine(mesin)
    }
 
+   const fetchDataIssueCategories = async () => {
+      const issues = []
+
+      await axios.get(`${BaseURL}/categories/issues`).then((res) => {
+         console.log('LOG-issue', res)
+         const data = res.data.data
+         if (data) {
+            data.forEach(d => {
+               const m = {
+                  value: d.id,
+                  label: d.issueName,
+               }
+
+               issues.push(m)
+            });
+         }
+      }).catch((err) => {
+         console.log("LOG-ERROR-GetIssueCategory: ", err)
+      })
+
+      setDataIssue(issues)
+      console.log("LOG-GetIssueCategory", dataIssue)
+   }
+
    const fetchDataOrderProductions = async () => {
       const orderProductions = []
       await axios.get(`${BaseURL}/product/order-productions`)
@@ -106,13 +141,12 @@ const OrderProduction = () => {
 
             data.forEach(d => {
                const m = {
-                  dataId: d.orderId,
+                  productionId: d.id,
                   orderId: d.orderId,
                   customer: d.customer,
                   machineId: d.machineId,
                   machineKode: d.machineKode,
                   machineName: d.machineName,
-                  machineStatus: d.machineStatus,
                   status: d.status,
                   startProductionDate: d.startProductionDate,
                   endProductionDate: d.endProductionDate,
@@ -125,7 +159,6 @@ const OrderProduction = () => {
             console.log('LOG-ERR-FETCH-DATA-MACHINE', err)
          })
 
-      setData(mesin)
    }
    // toggle function to view order details
    const toggle = (type) => {
@@ -187,53 +220,40 @@ const OrderProduction = () => {
    // resets forms
    const resetForm = () => {
       setFormData({
-         orderId: "",
-         customer: "",
-         machineKode: "",
-         machineId: 0,
-         machineName: "",
-         targetDaily: 1000,
-         unit: 'Meter',
-         status: 'OPEN',
-         startProductionDate: '',
-         endProductionDate: ''
+         productionId: null,
+         material: "",
+         reportedBy: null,
+         issueId: null,
+         issueName: "",
+         quantity: 0,
+         unit: "Meter",
+         notes: "",
+         productionDate: "",
       });
    };
 
-   const onFormSubmit = async (form) => {
-      const { customer, purchased, total } = form;
-      let submittedData = {
-         orderId: formData.orderId,
-         customer: formData.customer,
-         machineKode: formData.machineKode,
-         machineId: formData.machineId,
-         machineName: formData.machineName,
-         targetDaily: formData.targetDaily,
-         unit: formData.unit,
-         status: formData.status,
-         startProductionDate: rangeDate.start.toLocaleDateString(),
-         endProductionDate: rangeDate.end.toLocaleDateString()
-      };
-      console.log('LOG-submittedData', submittedData)
-
+   const onFormSubmit = async () => {
       const payload = {
-         orderId: submittedData.orderId,
-         customer: submittedData.customer,
-         machineId: submittedData.machineId,
-         status: submittedData.status,
-         startProductionDate: submittedData.startProductionDate,
-         endProductionDate: submittedData.endProductionDate,
+         productionId: formData.productionId,
+         reportedBy: dataUser.employeeId,
+         material: formData.material,
+         quantity: formData.quantity,
+         unit: formData.unit,
+         notes: note,
+         issueId: formData.issueId,
+         productionDate: startIconDate,
       }
       console.log('LOG-submittedData-payload', payload)
 
-      await axios.post(`${BaseURL}/product/add-order-production`, payload)
-         .then((res) => {
-            setData([submittedData, ...data]);
-            setView({ add: false, details: false, edit: false });
-            resetForm();
-         }).catch((err) => {
-            console.log('LOG-ERR-POST-DATA', err)
-         })
+      // await axios.post(`${BaseURL}/product/add-order-production`, payload)
+      //    .then((res) => {
+      //       setData([submittedData, ...data]);
+      //       setView({ add: false, details: false, edit: false });
+      //       resetForm();
+      //    }).catch((err) => {
+      //       console.log('LOG-ERR-POST-DATA', err)
+      //    })
+      event.preventDefault()
    };
 
    const onFormEdit = async (form) => {
@@ -263,7 +283,7 @@ const OrderProduction = () => {
       console.log('LOG-submittedData-payload', payload)
 
 
-      await axios.put(`${BaseURL}/product/order-production/${formData.dataId}`, payload)
+      await axios.put(`${BaseURL}/product/order-production/${submittedData.orderId}`, payload)
          .then((res) => {
             fetchDataOrderProductions()
             // setData([submittedData, ...data]);
@@ -318,6 +338,37 @@ const OrderProduction = () => {
       setFormData(defaultData[0])
       console.log('LOG-editOrder-formData', formData)
    };
+
+   const onEditSubmit = async () => {
+      console.log('LOG-onEditSubmit-formData', formData)
+      // let submittedData;
+      // let newItems = data;
+      // let index = newItems.findIndex((item) => item.id === editId);
+
+      // newItems.forEach((item) => {
+      //    if (item.id === editId) {
+      //       submittedData = {
+      //          id: editId,
+      //          name: formData.name,
+      //          img: files.length > 0 ? files[0].preview : item.img,
+      //          sku: formData.sku,
+      //          price: formData.price,
+      //          salePrice: formData.salePrice,
+      //          stock: formData.stock,
+      //          category: formData.category,
+      //          fav: false,
+      //          check: false,
+      //       };
+      //    }
+      // });
+      // newItems[index] = submittedData;
+      // //setData(newItems);
+      // resetForm();
+      // setView({ edit: false, add: false });
+   };
+
+   const addReport = () => {
+   }
    // function to delete a Order
    const deleteOrder = async (orderId) => {
       let defaultData = data;
@@ -401,7 +452,7 @@ const OrderProduction = () => {
             <BlockHead size="sm">
                <BlockBetween>
                   <BlockHeadContent>
-                     <BlockTitle>Order Production</BlockTitle>
+                     <BlockTitle>Production Report</BlockTitle>
                   </BlockHeadContent>
                   <BlockHeadContent>
                      <div className="toggle-wrap nk-block-tools-toggle">
@@ -460,7 +511,7 @@ const OrderProduction = () => {
                                     </DropdownMenu>
                                  </UncontrolledDropdown>
                               </li> */}
-                              <li className="nk-block-tools-opt">
+                              {/* <li className="nk-block-tools-opt">
                                  <Button
                                     className="toggle btn-icon d-md-none"
                                     color="primary"
@@ -480,7 +531,7 @@ const OrderProduction = () => {
                                     <Icon name="plus"></Icon>
                                     <span>Add Order Production</span>
                                  </Button>
-                              </li>
+                              </li> */}
                            </ul>
                         </div>
                      </div>
@@ -506,10 +557,10 @@ const OrderProduction = () => {
                         <span className="sub-text">Order ID</span>
                      </DataTableRow>
                      <DataTableRow>
-                        <span className="sub-text">Customer Name</span>
+                        <span className="sub-text">Kode Mesin</span>
                      </DataTableRow>
                      <DataTableRow>
-                        <span className="sub-text">Kode Mesin</span>
+                        <span className="sub-text">Nama Mesin</span>
                      </DataTableRow>
                      {/* <DataTableRow>
                         <span className="sub-text">Target Harian</span>
@@ -518,10 +569,7 @@ const OrderProduction = () => {
                         <span className="sub-text">Unit</span>
                      </DataTableRow> */}
                      <DataTableRow>
-                        <span className="sub-text">Status Mesin</span>
-                     </DataTableRow>
-                     <DataTableRow>
-                        <span className="sub-text">Status Produksi</span>
+                        <span className="sub-text">Status</span>
                      </DataTableRow>
                      <DataTableRow size="sm">
                         <span className="sub-text">Tanggal Proses Produksi</span>
@@ -578,7 +626,7 @@ const OrderProduction = () => {
 
                   {currentItems.length > 0
                      ? currentItems.map((item, idx) => (
-                        <DataTableItem key={item.id}>
+                        <DataTableItem key={idx}>
                            {/* <DataTableRow className="nk-tb-col-check">
                               <div className="custom-control custom-control-sm custom-checkbox notext">
                                  <input
@@ -596,13 +644,13 @@ const OrderProduction = () => {
                               <span className="tb-sub">{item.orderId}</span>
                            </DataTableRow>
                            <DataTableRow>
-                              <span className="tb-sub">{item.customer}</span>
-                           </DataTableRow>
-                           <DataTableRow>
                               {/* <a href="#id" onClick={(ev) => ev.preventDefault()}>
                                  #{item.orderId}
                               </a> */}
                               <span className="tb-sub">{item.machineKode}</span>
+                           </DataTableRow>
+                           <DataTableRow>
+                              <span className="tb-sub">{item.machineName}</span>
                            </DataTableRow>
                            {/* <DataTableRow >
                               <span className="tb-sub">{item.machineName}ALSDAS</span>
@@ -613,18 +661,6 @@ const OrderProduction = () => {
                            {/* <DataTableRow size="sm">
                               <span className="tb-sub">{item.unit}</span>
                            </DataTableRow> */}
-                           <DataTableRow>
-                              <DataTableRow>
-                                 <Badge
-                                    className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
-                                    color={
-                                       item.machineStatus == true ? "success" : "warning"
-                                    }
-                                 >
-                                    {item.machineStatus == true ? "READY" : "NOT READY"}
-                                 </Badge>
-                              </DataTableRow>
-                           </DataTableRow>
                            <DataTableRow>
                               <DataTableRow>
                                  <span
@@ -687,14 +723,20 @@ const OrderProduction = () => {
                                                    href="#dropdown"
                                                    onClick={(ev) => {
                                                       ev.preventDefault();
-                                                      // setFormData(setFormData({ ...formData, dataId: item.orderId }))
-                                                      editOrder(item.orderId);
-                                                      onRangeChange([new Date(item.startProductionDate), new Date(item.endProductionDate)])
-                                                      toggle("edit");
+                                                      // editOrder(item.orderId);
+                                                      // onRangeChange([new Date(item.startProductionDate), new Date(item.endProductionDate)])
+                                                      setFormData({ ...data, productionId: item.productionId })
+                                                      navigate(`create-report`, {
+                                                         state: {
+                                                            productionId: item.productionId,
+                                                            orderId: item.orderId,
+                                                         }
+                                                      })
+                                                      // toggle("add");
                                                    }}
                                                 >
-                                                   <Icon name="pen"></Icon>
-                                                   <span>Edit Order Production</span>
+                                                   <Icon name="plus"></Icon>
+                                                   <span>Buat Laporan Harian</span>
                                                 </DropdownItem>
                                              </li>
                                              {/* {item.status !== "Delivered" && (
@@ -718,11 +760,17 @@ const OrderProduction = () => {
                                                    href="#dropdown"
                                                    onClick={(ev) => {
                                                       ev.preventDefault();
-                                                      deleteOrder(item.orderId);
+                                                      navigate(`detail-report`, {
+                                                         state: {
+                                                            productionId: item.productionId,
+                                                            orderId: item.orderId,
+                                                         }
+                                                      })
+                                                      // toggle("details");
                                                    }}
                                                 >
-                                                   <Icon name="trash"></Icon>
-                                                   <span>Remove Order Production</span>
+                                                   <Icon name="eye"></Icon>
+                                                   <span>Lihat Detail Laporan</span>
                                                 </DropdownItem>
                                              </li>
                                           </ul>
@@ -750,6 +798,7 @@ const OrderProduction = () => {
                   )}
                </PreviewAltCard>
             </Block>
+
             {/* FORM ADD  */}
             <Modal isOpen={view.add} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
                <ModalBody>
@@ -764,235 +813,82 @@ const OrderProduction = () => {
                      ></Icon>
                   </a>
                   <div className="p-2">
-                     <h5 className="title">Add Order Production</h5>
+                     <h5 className="title">Buat Laporan Harian Produksi</h5>
                      <div className="mt-4">
-                        <form onSubmit={handleSubmit(onFormSubmit)}>
+                        <form noValidate onSubmit={handleSubmit(onFormSubmit)} >
                            <Row className="g-3">
                               <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="orderId">
-                                       Order ID
+                                    <label className="form-label" htmlFor="dateOfProduction">
+                                       Tanggal Produksi
                                     </label>
                                     <div className="form-control-wrap">
-                                       <input
-                                          type="text"
-                                          className="form-control"
-                                          {...register('orderId', {
-                                             required: "This field is required",
-                                          })}
-                                          onChange={(e) => setFormData({ ...formData, orderId: e.target.value })}
-                                          value={formData.orderId} />
-                                       {errors.orderId && <span className="invalid">{errors.orderId.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="customer">
-                                       Customer Name
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <input
-                                          type="text"
-                                          className="form-control"
-                                          {...register('customer', {
-                                             required: "This field is required",
-                                          })}
-                                          onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
-                                          value={formData.customer} />
-                                       {errors.customer && <span className="invalid">{errors.customer.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="machine">
-                                       Mesin
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <RSelect
-                                          name="machine"
-                                          options={dataMachine}
-                                          onChange={(e) => setFormData({ ...formData, machineKode: e.value, machineId: e.id, machineName: e.name })}
-                                          value={{ id: formData.machineId, value: formData.machineKode, name: formData.machineName, label: `${formData.machineKode} - ${formData.machineName}` }}
-                                       />
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="dateOfOrderProduction">
-                                       Date of Order Production
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       {/* <DatePicker
-                                          selected={formData.date}
-                                          className="form-control"
-                                          onChange={(date) => setFormData({ ...formData, date: date })}
-                                       /> */}
                                        <div className="form-control-wrap">
+                                          <div className="form-icon form-icon-left">
+                                             <Icon name="calendar"></Icon>
+                                          </div>
                                           <DatePicker
-                                             selected={rangeDate.start}
-                                             startDate={rangeDate.start}
-                                             onChange={onRangeChange}
-                                             endDate={rangeDate.end}
-                                             selectsRange
+                                             id="dateOfProduction"
+                                             name="dateOfProduction"
+                                             selected={startIconDate}
                                              className="form-control date-picker"
-                                          />{" "}
+                                             onChange={setStartIconDate}
+                                          // customInput={<ExampleCustomInput />}
+                                          />
                                        </div>
-                                       {errors.dateOfOrderProduction && <span className="invalid">{errors.dateOfOrderProduction.message}</span>}
+                                       <div className="form-note">
+                                          Format Tanggal <code>mm/dd/yyyy</code>
+                                       </div>
+                                       {errors.dateOfProduction && <span className="invalid">{errors.dateOfProduction.message}</span>}
                                     </div>
                                  </div>
                               </Col>
-
                               <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="status">
-                                       Status
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <RSelect
-                                          name="status"
-                                          options={statusOrderProduction}
-                                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                                          value={{ value: formData.status, label: formData.status }}
-                                       />
-                                    </div>
-                                 </div>
-                              </Col>
-
-
-                              <Col size="12">
-                                 <Button color="primary" type="submit">
-                                    <Icon className="plus"></Icon>
-                                    <span>Add Order</span>
-                                 </Button>
-                              </Col>
-                           </Row>
-                        </form>
-                     </div>
-                  </div>
-               </ModalBody>
-            </Modal>
-
-            {/* FORM EDIT */}
-            <Modal isOpen={view.edit} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-               <ModalBody>
-                  <a href="#cancel" className="close">
-                     {" "}
-                     <Icon
-                        name="cross-sm"
-                        onClick={(ev) => {
-                           ev.preventDefault();
-                           onFormCancel();
-                        }}
-                     ></Icon>
-                  </a>
-                  <div className="p-2">
-                     <h5 className="title">Edit Order Production</h5>
-                     <div className="mt-4">
-                        <form onSubmit={handleSubmit(onFormEdit)}>
-                           <Row className="g-3">
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="orderId">
-                                       Order ID
+                                    <label className="form-label" htmlFor="material">
+                                       Material
                                     </label>
                                     <div className="form-control-wrap">
                                        <input
+                                          id="material"
+                                          name="material"
                                           type="text"
                                           className="form-control"
-                                          {...register('orderId', {
+                                          {...register('material', {
                                              required: "This field is required",
                                           })}
-                                          onChange={(e) => setFormData({ ...formData, orderId: e.target.value })}
-                                          value={formData.orderId} />
-                                       {errors.orderId && <span className="invalid">{errors.orderId.message}</span>}
+                                          onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                                          value={formData.material} />
+                                       {errors.material && <span className="invalid">{errors.material.message}</span>}
                                     </div>
                                  </div>
                               </Col>
                               <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="customer">
-                                       Customer Name
+                                    <label className="form-label" htmlFor="quantity">
+                                       Quantity
                                     </label>
                                     <div className="form-control-wrap">
                                        <input
-                                          type="text"
-                                          className="form-control"
-                                          {...register('customer', {
-                                             required: "This field is required",
-                                          })}
-                                          onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
-                                          value={formData.customer} />
-                                       {errors.customer && <span className="invalid">{errors.customer.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="machine">
-                                       Mesin
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <RSelect
-                                          name="machine"
-                                          options={dataMachine}
-                                          onChange={(e) => setFormData({ ...formData, machineKode: e.value, machineId: e.id, machineName: e.name })}
-                                          value={{ id: formData.machineId, value: formData.machineKode, name: formData.machineName, label: `${formData.machineKode} - ${formData.machineName}` }}
-                                       />
-                                    </div>
-                                 </div>
-                              </Col>
-                              <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="dateOfOrderProduction">
-                                       Date of Order Production
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       {/* <DatePicker
-                                          selected={formData.date}
-                                          className="form-control"
-                                          onChange={(date) => setFormData({ ...formData, date: date })}
-                                       /> */}
-                                       <div className="form-control-wrap">
-                                          <DatePicker
-                                             selected={rangeDate.start}
-                                             startDate={rangeDate.start}
-                                             onChange={onRangeChange}
-                                             endDate={rangeDate.end}
-                                             selectsRange
-                                             className="form-control date-picker"
-                                          />{" "}
-                                       </div>
-                                       {errors.dateOfOrderProduction && <span className="invalid">{errors.dateOfOrderProduction.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col>
-                              {/* <Col md="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="targetDaily">
-                                       Target Harian
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <input
+                                          id="quantity"
                                           type="number"
+                                          step="any"
                                           className="form-control"
-                                          {...register('targetHarian', { required: "This is required" })}
-                                          value={formData.targetDaily}
-                                          onChange={(e) => setFormData({ ...formData, targetDaily: e.target.value })} />
-                                       {errors.targetDaily && <span className="invalid">{errors.targetDaily.message}</span>}
+                                          {...register('quantity', { required: "This is required" })}
+                                          value={formData.quantity}
+                                          onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} />
+                                       {errors.quantity && <span className="invalid">{errors.quantity.message}</span>}
                                     </div>
                                  </div>
-                              </Col> */}
-
-                              {/* <Col md="6">
+                              </Col>
+                              <Col md="6">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="unit">
+                                    <span className="form-label" htmlFor="select-unit">
                                        Unit
-                                    </label>
+                                    </span>
                                     <div className="form-control-wrap">
                                        <RSelect
+                                          id="select-unit"
                                           name="unit"
                                           options={unitOptions}
                                           onChange={(e) => setFormData({ ...formData, unit: e.value })}
@@ -1000,20 +896,31 @@ const OrderProduction = () => {
                                        />
                                     </div>
                                  </div>
-                              </Col> */}
+                              </Col>
 
-                              <Col md="6">
+                              <Col md="4">
                                  <div className="form-group">
-                                    <label className="form-label" htmlFor="status">
-                                       Status
-                                    </label>
+                                    <span className="form-label" htmlFor="select-issue">
+                                       Issue
+                                    </span>
                                     <div className="form-control-wrap">
                                        <RSelect
-                                          name="status"
-                                          options={statusOrderProduction}
-                                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                                          value={{ value: getStatus(formData.status).value, label: getStatus(formData.status).status }}
+                                          id="select-issue"
+                                          options={dataIssue}
+                                          onChange={(e) => setFormData({ ...formData, issueId: e.value, issueName: e.label })}
+                                          value={{ value: formData.issueId, label: formData.issueName }}
                                        />
+                                    </div>
+                                 </div>
+                              </Col>
+
+                              <Col className="col-8">
+                                 <div className="form-control-wrap">
+                                    <label className="form-label" htmlFor="notes">
+                                       Notes
+                                    </label>
+                                    <div className="input-group">
+                                       <textarea id="notes" name="notes" className="form-control" value={note} onChange={(e) => setNote(e.target.value)}></textarea>
                                     </div>
                                  </div>
                               </Col>
@@ -1021,8 +928,7 @@ const OrderProduction = () => {
 
                               <Col size="12">
                                  <Button color="primary" type="submit">
-                                    <Icon className="plus"></Icon>
-                                    <span>Update Order Production</span>
+                                    <span>Submit Laporan</span>
                                  </Button>
                               </Col>
                            </Row>
@@ -1032,60 +938,10 @@ const OrderProduction = () => {
                </ModalBody>
             </Modal>
 
-            <Modal isOpen={view.details} toggle={() => onFormCancel()} className="modal-dialog-centered" size="lg">
-               <ModalBody>
-                  <a href="#cancel" className="close">
-                     {" "}
-                     <Icon
-                        name="cross-sm"
-                        onClick={(ev) => {
-                           ev.preventDefault();
-                           onFormCancel();
-                        }}
-                     ></Icon>
-                  </a>
-                  <div className="nk-tnx-details mt-sm-3">
-                     <div className="nk-modal-head mb-3">
-                        <h5 className="title">Order Details</h5>
-                     </div>
-                     <Row className="gy-3">
-                        <Col lg={6}>
-                           <span className="sub-text">Order Id</span>
-                           <span className="caption-text">{formData.orderId}</span>
-                        </Col>
-                        <Col lg={6}>
-                           <span className="sub-text">Status</span>
-                           <span
-                              className={`dot bg-${formData.status === "Delivered" ? "success" : "warning"} d-sm-none`}
-                           ></span>
-                           <Badge
-                              className="badge-sm badge-dot has-bg d-none d-sm-inline-flex"
-                              color={
-                                 formData.status === "Delivered" ? "success" : "warning"
-                              }
-                           >
-                              {formData.status}
-                           </Badge>
-                        </Col>
-                        <Col lg={6}>
-                           <span className="sub-text">Customer</span>
-                           <span className="caption-text">{formData.customer}</span>
-                        </Col>
-                        <Col lg={6}>
-                           <span className="sub-text">Purchased Product</span>
-                           <span className="caption-text">{formData.purchased}</span>
-                        </Col>
-                        <Col lg={6}>
-                           <span className="sub-text">Total Price</span>
-                           <span className="caption-text">{formData.total}</span>
-                        </Col>
-                     </Row>
-                  </div>
-               </ModalBody>
-            </Modal>
+
          </Content>
       </React.Fragment>
    );
 };
 
-export default OrderProduction;
+export default OrderProductionReport;

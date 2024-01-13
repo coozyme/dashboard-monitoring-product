@@ -78,7 +78,7 @@ const menu = [
   {
     icon: "card-view",
     text: "Production Report",
-    link: "/report-production",
+    link: "/production-report",
   },
   {
     heading: "Configuration",

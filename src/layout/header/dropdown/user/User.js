@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DropdownToggle, DropdownMenu, Dropdown } from "reactstrap";
 import { Icon } from "../../../../components/Component";
 import { LinkList, LinkItem } from "../../../../components/links/Links";
@@ -9,7 +9,19 @@ const User = () => {
   const theme = useTheme();
   const themeUpdate = useThemeUpdate();
   const [open, setOpen] = useState(false);
+  const [dataUser, setDataUser] = useState({});
   const toggle = () => setOpen((prevState) => !prevState);
+
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("user"));
+    setDataUser(data);
+  }, [dataUser]);
+
+  const clearStorage = () => {
+    localStorage.clear();
+    window.location.reload();
+  }
 
   return (
     <Dropdown isOpen={open} className="user-dropdown" toggle={toggle}>
@@ -24,8 +36,8 @@ const User = () => {
         <div className="user-toggle">
           <UserAvatar icon="user-alt" className="sm" />
           <div className="user-info d-none d-md-block">
-            <div className="user-status">Administrator</div>
-            <div className="user-name dropdown-indicator">Abu Bin Ishityak</div>
+            <div className="user-status">{dataUser?.role?.title}</div>
+            <div className="user-name dropdown-indicator">{dataUser?.fullname}</div>
           </div>
         </div>
       </DropdownToggle>
@@ -36,8 +48,8 @@ const User = () => {
               <span>AB</span>
             </div>
             <div className="user-info">
-              <span className="lead-text">Abu Bin Ishtiyak</span>
-              <span className="sub-text">info@softnio.com</span>
+              <span className="lead-text">{dataUser?.fullname}</span>
+              <span className="sub-text">{dataUser?.username}</span>
             </div>
           </div>
         </div>
@@ -69,7 +81,7 @@ const User = () => {
         </div>
         <div className="dropdown-inner">
           <LinkList>
-            <a href={`${process.env.PUBLIC_URL}/auth-login`}>
+            <a href={`${process.env.PUBLIC_URL}/auth-login`} onClick={clearStorage}>
               <Icon name="signout"></Icon>
               <span>Sign Out</span>
             </a>
