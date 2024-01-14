@@ -199,6 +199,7 @@ const Router = () => {
 
         {/* Monev Route */}
         <Route path="order-production" element={<OrderProduction />}></Route>
+        <Route path="productions-analitycs" element={<OrderProduction />}></Route>
         <Route path="production-report" element={<OrderProductionReport />}></Route>
         <Route path="production-report/create-report" element={<CreateDailyReportProduction />}></Route>
         <Route path="production-report/detail-report" element={<DetailReportProduction />}></Route>

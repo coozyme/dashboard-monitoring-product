@@ -200,7 +200,7 @@ const DetailReportProduction = () => {
 
    const handleChecklist = async (reportDailyId, materialId, materialDataIndex, isChecked) => {
       console.log('LOG-handleChecklist', reportDailyId, materialId, materialDataIndex, isChecked)
-      const approverId = dataUser.role.id
+      const approverId = dataUser.employeeId
       let url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&materialId=${materialId}`
       if (approverId !== 1) {
          url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&materialId=${materialId}&reportDailyId=${reportDailyId}&approverId=${approverId}`

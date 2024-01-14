@@ -8,6 +8,11 @@ const MenuMonev = [
       link: "/analytics",
    },
    {
+      icon: "growth-fill",
+      text: "Production Analytics",
+      link: "/productions-analytics",
+   },
+   {
       heading: "Orders Process",
    },
    {

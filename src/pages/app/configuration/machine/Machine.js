@@ -21,7 +21,7 @@ import {
 import { Card, DropdownItem, UncontrolledDropdown, DropdownMenu, DropdownToggle, Badge } from "reactstrap";
 import { productData, categoryOptions, MachineData, MachineStatusData } from "./ProductData";
 import SimpleBar from "simplebar-react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import ProductH from "../../../../images/product/h.png";
 import Dropzone from "react-dropzone";
 import { Modal, ModalBody } from "reactstrap";
@@ -35,12 +35,16 @@ import { BaseURL } from "../../../../config/config";
 const Machine = () => {
    const MachineDatas = MachineData
    const [data, setData] = useState([]);
+   const [dataEmployee, setDataEmployee] = useState([]);
    const [sm, updateSm] = useState(false);
    const [statusMachine, setStatusMachine] = useState(false);
    const [formData, setFormData] = useState({
+      id: null,
       kode: "",
       name: "",
-      pic: "",
+      picId: null,
+      picName: "",
+      averageProduce: 0,
       status: statusMachine
    });
    const [editId, setEditedId] = useState();
@@ -94,8 +98,36 @@ const Machine = () => {
          console.log('LOG-Err-fetchData', error)
       }
    }
+
+   const fetchDataEmployee = async () => {
+      try {
+         const emp = []
+         const employee = await axios.get(`${BaseURL}/employee`)
+
+         employee.data.data.forEach((item) => {
+            const data = {
+               id: item.id,
+               fullname: item.fullname,
+               username: item.username,
+               role: item.role,
+               roleId: item.roleId,
+               isActive: item.isActive,
+               value: item.id,
+               label: item.fullname
+            }
+
+            emp.push(data)
+         })
+         setDataEmployee(emp)
+      } catch (error) {
+         console.log("LOG-ERROR-fetchDataEmployee: ", error)
+      }
+
+   }
+
    useEffect(() => {
       fetchData();
+      fetchDataEmployee();
    }, []);
 
    // function to close the form modal
@@ -119,46 +151,56 @@ const Machine = () => {
       reset({});
    };
 
-   const onFormSubmit = async (event) => {
-      const { kode, name, pic, status } = formData;
+   const onFormSubmit = async () => {
+      const { kode, name, picId, status, averageProduce } = formData;
 
       let submittedData = {
          kode: kode,
          name: name,
-         pic: pic,
+         picId: picId,
+         averageProduce: averageProduce,
          status: statusMachine
       };
 
       console.log('LOG-submittedData', submittedData, statusMachine)
-      await axios.post(`${BaseURL}/machine`, submittedData).then((response) => {
+      await axios.post(`${BaseURL}/machine/add-machine`, submittedData).then((response) => {
          console.log('LOG-axios', response.data.data)
-
+         // setData([submittedData, ...data]);
+         fetchData();
+      }).catch((error) => {
+         console.log('LOG-axios-err', error)
       })
-      setData([submittedData, ...data]);
-      event.preventDefault()
-      // setView({ open: false });
+      // event.preventDefault()
+      setView({ add: false });
       // setFiles([]);
-      // resetForm();
+      resetForm();
    };
 
-   const onEditSubmit = (event) => {
+   const onEditSubmit = async () => {
       let newItems = data;
-      const { kode, name, pic, status } = formData;
+      const { kode, name, picId, status, averageProduce, picName, id } = formData;
 
-      let index = newItems.findIndex((item) => item.id === editId);
+      // let index = newItems.findIndex((item) => item.id === editId);
 
       let editedData = {
          kode: kode,
          name: name,
-         pic: pic,
+         picId: picId,
+         picName: picName,
+         averageProduce: averageProduce,
          status: statusMachine
       };
-      console.log('LOG-editedData', editedData, status, statusMachine)
-      newItems[index] = editedData;
 
-      resetForm();
+      await axios.put(`${BaseURL}/machine/${id}`, editedData).then((response) => {
+         // console.log('LOG-editedData', editedData, status, statusMachine)
+         // newItems[index] = editedData;
+         fetchData();
+      }).catch((error) => {
+         console.log('LOG-axios-err', error)
+      })
       setView({ edit: false, add: false });
-      event.preventDefault()
+      resetForm();
+      // event.preventDefault()
    };
 
    // function that loads the want to editted data
@@ -166,9 +208,12 @@ const Machine = () => {
       data.forEach((item) => {
          if (item.id === id) {
             setFormData({
+               id: item.id,
                name: item.name,
                kode: item.kode,
-               pic: item.pic,
+               picId: item.picId,
+               picName: item.picName,
+               averageProduce: item.averageProduce,
                status: item.status
             });
          }
@@ -465,7 +510,7 @@ const Machine = () => {
                                           {/* </span> */}
                                        </DataTableRow>
                                        <DataTableRow>
-                                          <span className="tb-sub">{item.pic}</span>
+                                          <span className="tb-sub">{item.picName}</span>
                                        </DataTableRow>
                                        <DataTableRow>
                                           <span className="tb-sub">{item.averageProduce}</span>
@@ -508,6 +553,16 @@ const Machine = () => {
                                              onClick={(ev) => {
                                                 ev.preventDefault();
                                                 onEditClick(item.id);
+                                                setStatusMachine(item.status)
+                                                setFormData({
+                                                   id: item.id,
+                                                   kode: item.kode,
+                                                   name: item.name,
+                                                   picId: item.picId,
+                                                   picName: item.picName,
+                                                   averageProduce: item.averageProduce,
+                                                   status: item.status
+                                                })
                                                 toggle("edit");
                                              }}
                                           >
@@ -623,26 +678,8 @@ const Machine = () => {
                   <div className="p-2">
                      <h5 className="title">Update Machine</h5>
                      <div className="mt-4">
-                        <form noValidate onSubmit={onEditSubmit} id="form-update-machine">
+                        <form noValidate onSubmit={handleSubmit(onEditSubmit)} id="form-update-machine">
                            <Row className="g-3">
-                              {/* <Col size="12">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="machine-name">
-                                       Nama Mesin
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <input
-                                          type="text"
-                                          className="form-control"
-                                          {...register('name', {
-                                             required: "This field is required",
-                                          })}
-                                          value={formData.name}
-                                          onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                                       {errors.name && <span className="invalid">{errors.name.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col> */}
                               <Col md="6">
                                  <div className="form-group">
                                     <label className="form-label" htmlFor="machine-kode" id="form-update-machine">
@@ -685,19 +722,35 @@ const Machine = () => {
                                        PIC
                                     </label>
                                     <div className="form-control-wrap">
-                                       <input
-                                          id="machine-pic"
+                                       <RSelect
+                                          id="select-unit"
                                           name="machine-pic"
-                                          type="text"
-                                          className="form-control"
-                                          {...register('pic', { required: "This is required" })}
-                                          value={formData.pic}
-                                          onChange={(e) => setFormData({ ...formData, pic: e.target.value })} />
-                                       {errors.pic && <span className="invalid">{errors.pic.message}</span>}
+                                          options={dataEmployee}
+                                          onChange={(e) => setFormData({ ...formData, picId: e.value, picName: e.label })}
+                                          value={{ value: formData.picId, label: formData.picName }}
+                                       />
                                     </div>
                                  </div>
                               </Col>
-                              <Col md="6">
+                              <Col md="3">
+                                 <div className="form-group">
+                                    <label className="form-label" htmlFor="machine-averageProduce" id="form-update-machine">
+                                       Rata - Rata Produksi
+                                    </label>
+                                    <div className="form-control-wrap">
+                                       <input
+                                          id="machine-averageProduce"
+                                          name="machine-averageProduce"
+                                          type="number"
+                                          {...register('averageProduce', { required: "This is required" })}
+                                          className="form-control"
+                                          value={formData.averageProduce}
+                                          onChange={(e) => setFormData({ ...formData, averageProduce: e.target.value })} />
+                                       {errors.averageProduce && <span className="invalid">{errors.averageProduce.message}</span>}
+                                    </div>
+                                 </div>
+                              </Col>
+                              <Col md="3">
                                  <div className="form-group">
                                     <label className="form-label" >
                                        Status Mesin
@@ -738,59 +791,6 @@ const Machine = () => {
                                     </div>
                                  </div>
                               </Col>
-                              {/* <Col size="12">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="category">
-                                       Category
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <RSelect
-                                          isMulti
-                                          options={categoryOptions}
-                                          value={formData.category}
-                                          onChange={(value) => setFormData({ ...formData, category: value })}
-                                       //ref={register({ required: "This is required" })}
-                                       />
-                                       {errors.category && <span className="invalid">{errors.category.message}</span>}
-                                    </div>
-                                 </div>
-                              </Col> */}
-                              {/* <Col size="6">
-                                 <div className="form-group">
-                                    <label className="form-label" htmlFor="category">
-                                       Product Image
-                                    </label>
-                                    <div className="form-control-wrap">
-                                       <img src={formData.img} alt=""></img>
-                                    </div>
-                                 </div>
-                              </Col> */}
-                              {/* <Col size="6">
-                                 <Dropzone onDrop={(acceptedFiles) => handleDropChange(acceptedFiles)}>
-                                    {({ getRootProps, getInputProps }) => (
-                                       <section>
-                                          <div
-                                             {...getRootProps()}
-                                             className="dropzone upload-zone small bg-lighter my-2 dz-clickable"
-                                          >
-                                             <input {...getInputProps()} />
-                                             {files.length === 0 && <p>Drag 'n' drop some files here, or click to select files</p>}
-                                             {files.map((file) => (
-                                                <div
-                                                   key={file.name}
-                                                   className="dz-preview dz-processing dz-image-preview dz-error dz-complete"
-                                                >
-                                                   <div className="dz-image">
-                                                      <img src={file.preview} alt="preview" />
-                                                   </div>
-                                                </div>
-                                             ))}
-                                          </div>
-                                       </section>
-                                    )}
-                                 </Dropzone>
-                              </Col> */}
-
                               <Col size="12">
                                  <Button color="primary" type="submit">
                                     <Icon className="plus"></Icon>
@@ -844,7 +844,7 @@ const Machine = () => {
                         </Col> */}
                         <Col lg={6}>
                            <span className="sub-text">PIC</span>
-                           <span className="caption-text"> {formData.pic}</span>
+                           <span className="caption-text"> {formData.picName}</span>
                         </Col>
                      </Row>
                   </div>
@@ -867,7 +867,7 @@ const Machine = () => {
                </BlockHead>
                <Block>
                   {/* <form onSubmit={ () => handleSubmit(onFormSubmit)}> */}
-                  <form onSubmit={onFormSubmit} id="form-add-machine">
+                  <form onSubmit={handleSubmit(onFormSubmit)} id="form-add-machine">
                      <Row className="g-3">
                         {/* <Col size="12">
                            <div className="form-group">
@@ -929,15 +929,31 @@ const Machine = () => {
                                  PIC
                               </label>
                               <div className="form-control-wrap">
+                                 <RSelect
+                                    id="select-unit"
+                                    name="unit"
+                                    options={dataEmployee}
+                                    onChange={(e) => setFormData({ ...formData, picId: e.value, picName: e.label })}
+                                    value={{ value: formData.picId, label: formData.picName }}
+                                 />
+                              </div>
+                           </div>
+                        </Col>
+                        <Col md="6">
+                           <div className="form-group">
+                              <label className="form-label" htmlFor="machine-averageProduce" id="form-add-machine">
+                                 Rata - Rata Produksi
+                              </label>
+                              <div className="form-control-wrap">
                                  <input
-                                    id="machine-pic"
-                                    name="machine-pic"
-                                    type="text"
+                                    id="machine-averageProduce"
+                                    name="machine-averageProduce"
+                                    type="number"
+                                    {...register('averageProduce', { required: "This is required" })}
                                     className="form-control"
-                                    {...register('pic', { required: "This is required" })}
-                                    value={formData.pic}
-                                    onChange={(e) => setFormData({ ...formData, pic: e.target.value })} />
-                                 {errors.pic && <span className="invalid">{errors.pic.message}</span>}
+                                    value={formData.averageProduce}
+                                    onChange={(e) => setFormData({ ...formData, averageProduce: e.target.value })} />
+                                 {errors.averageProduce && <span className="invalid">{errors.averageProduce.message}</span>}
                               </div>
                            </div>
                         </Col>
