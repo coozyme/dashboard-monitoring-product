@@ -86,6 +86,14 @@ const menu = [
     link: "/production-report",
   },
   {
+    heading: "Categories",
+  },
+  {
+    icon: "dot-box-fill",
+    text: "Issue",
+    link: "/categories-issue",
+  },
+  {
     heading: "Configuration",
   },
   {
@@ -99,8 +107,12 @@ const menu = [
     active: false,
     subMenu: [
       {
-        text: "Employee List",
-        link: "/employee-list",
+        text: "Employee",
+        link: "/employee",
+      },
+      {
+        text: "Role",
+        link: "/role",
       },
       {
         text: "User List - Regular",

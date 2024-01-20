@@ -25,11 +25,13 @@ import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem, Butto
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { BaseURL } from "../../../config/config";
+import moment from "moment/moment";
 
 const OrderProduction = () => {
    const [data, setData] = useState([]);
    const [dataMachine, setDataMachine] = useState([]);
    const [smOption, setSmOption] = useState(false);
+   const [notes, setNotes] = useState("");
    const [formData, setFormData] = useState({
       dataId: "",
       orderId: "",
@@ -37,6 +39,7 @@ const OrderProduction = () => {
       machineKode: "",
       machineId: 0,
       machineName: "",
+      notes: "",
       targetDaily: 1000,
       unit: 'Meter',
       status: 'OPEN',
@@ -114,6 +117,7 @@ const OrderProduction = () => {
                   machineName: d.machineName,
                   machineStatus: d.machineStatus,
                   status: d.status,
+                  notes: d.notes,
                   startProductionDate: d.startProductionDate,
                   endProductionDate: d.endProductionDate,
                }
@@ -162,7 +166,7 @@ const OrderProduction = () => {
    };
 
    const onRangeChange = (dates) => {
-      const [start, end] = dates;
+      let [start, end] = dates;
       setRangeDate({ start: start, end: end });
    };
 
@@ -221,6 +225,7 @@ const OrderProduction = () => {
          customer: submittedData.customer,
          machineId: submittedData.machineId,
          status: submittedData.status,
+         notes: notes,
          startProductionDate: submittedData.startProductionDate,
          endProductionDate: submittedData.endProductionDate,
       }
@@ -257,6 +262,7 @@ const OrderProduction = () => {
          customer: submittedData.customer,
          machineId: submittedData.machineId,
          status: submittedData.status,
+         notes: notes,
          startProductionDate: submittedData.startProductionDate,
          endProductionDate: submittedData.endProductionDate,
       }
@@ -373,6 +379,16 @@ const OrderProduction = () => {
             statusValue.status = 'FINISH'
             statusValue.color = 'success'
             statusValue.value = 'FINISH'
+            return statusValue
+         case 'CLOSED':
+            statusValue.status = 'CLOSED'
+            statusValue.color = 'dark'
+            statusValue.value = 'CLOSED'
+            return statusValue
+         case 'CANCEL':
+            statusValue.status = 'CANCEL'
+            statusValue.color = 'primary'
+            statusValue.value = 'CANCEL'
             return statusValue
          case 'ON_HOLD':
             statusValue.status = 'ON HOLD'
@@ -690,6 +706,7 @@ const OrderProduction = () => {
                                                       // setFormData(setFormData({ ...formData, dataId: item.orderId }))
                                                       editOrder(item.orderId);
                                                       onRangeChange([new Date(item.startProductionDate), new Date(item.endProductionDate)])
+                                                      setNotes(item.notes)
                                                       toggle("edit");
                                                    }}
                                                 >
@@ -861,6 +878,17 @@ const OrderProduction = () => {
                                  </div>
                               </Col>
 
+                              <Col className="col-6">
+                                 <div className="form-control-wrap">
+                                    <label className="form-label" htmlFor="notes">
+                                       Notes
+                                    </label>
+                                    <div className="input-group">
+                                       <textarea id="notes" name="notes" className="form-control" value={notes} onChange={(e) => setNotes(e.target.value)}></textarea>
+                                    </div>
+                                 </div>
+                              </Col>
+
 
                               <Col size="12">
                                  <Button color="primary" type="submit">
@@ -1014,6 +1042,17 @@ const OrderProduction = () => {
                                           onChange={(e) => setFormData({ ...formData, status: e.value })}
                                           value={{ value: getStatus(formData.status).value, label: getStatus(formData.status).status }}
                                        />
+                                    </div>
+                                 </div>
+                              </Col>
+
+                              <Col className="col-6">
+                                 <div className="form-control-wrap">
+                                    <label className="form-label" htmlFor="notes">
+                                       Notes
+                                    </label>
+                                    <div className="input-group">
+                                       <textarea id="notes" name="notes" className="form-control" value={notes} onChange={(e) => setNotes(e.target.value)}></textarea>
                                     </div>
                                  </div>
                               </Col>

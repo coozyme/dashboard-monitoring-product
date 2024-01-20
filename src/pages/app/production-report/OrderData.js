@@ -451,6 +451,8 @@ export const statusOrderProduction = [
   { value: "OPEN", label: "OPEN" },
   { value: "PROCCESS", label: "PROCCESS" },
   { value: "FINISH", label: "FINISH" },
+  { value: "CLOSED", label: "CLOSED" },
+  { value: "CANCEL", label: "CANCEL" },
   { value: "ON_HOLD", label: "ON HOLD" },
 ]
 

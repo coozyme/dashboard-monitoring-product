@@ -525,6 +525,16 @@ const CreateDailyReportProduction = () => {
             statusValue.color = 'success'
             statusValue.value = 'FINISH'
             return statusValue
+         case 'CLOSED':
+            statusValue.status = 'CLOSED'
+            statusValue.color = 'primary'
+            statusValue.value = 'CLOSED'
+            return statusValue
+         case 'CANCEL':
+            statusValue.status = 'CANCEL'
+            statusValue.color = 'indigo'
+            statusValue.value = 'CANCEL'
+            return statusValue
          case 'ON_HOLD':
             statusValue.status = 'ON HOLD'
             statusValue.color = 'warning'

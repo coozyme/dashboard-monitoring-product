@@ -29,6 +29,14 @@ const MenuMonev = [
       link: "/production-report",
    },
    {
+      heading: "Categories",
+   },
+   {
+      icon: "dot-box-fill",
+      text: "Issue",
+      link: "/categories-issue",
+   },
+   {
       heading: "Configuration",
    },
    {
@@ -43,8 +51,13 @@ const MenuMonev = [
       active: false,
       subMenu: [
          {
-            text: "Employee List",
-            link: "/employee-list",
+            text: "Employee",
+            link: "/employee",
+            key: "management_user",
+         },
+         {
+            text: "Role",
+            link: "/role",
             key: "management_user",
          },
       ],

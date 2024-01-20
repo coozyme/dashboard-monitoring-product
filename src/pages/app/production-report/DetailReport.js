@@ -535,6 +535,16 @@ const DetailReportProduction = () => {
             statusValue.color = 'success'
             statusValue.value = 'FINISH'
             return statusValue
+         case 'CLOSED':
+            statusValue.status = 'CLOSED'
+            statusValue.color = 'dark'
+            statusValue.value = 'CLOSED'
+            return statusValue
+         case 'CANCEL':
+            statusValue.status = 'CANCEL'
+            statusValue.color = 'primary'
+            statusValue.value = 'CANCEL'
+            return statusValue
          case 'ON_HOLD':
             statusValue.status = 'ON HOLD'
             statusValue.color = 'warning'
@@ -564,7 +574,7 @@ const DetailReportProduction = () => {
                   <BlockHeadContent>
 
                      <BlockTitle>
-                        Detail Laporan Order
+                        Detail Laporan Produksi
                         <strong className="text-primary small"> #{state.orderId}</strong >
                      </BlockTitle>
                   </BlockHeadContent>

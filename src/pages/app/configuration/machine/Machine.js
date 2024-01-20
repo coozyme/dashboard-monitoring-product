@@ -19,7 +19,6 @@ import {
    PaginationComponent,
 } from "../../../../components/Component";
 import { Card, DropdownItem, UncontrolledDropdown, DropdownMenu, DropdownToggle, Badge } from "reactstrap";
-import { productData, categoryOptions, MachineData, MachineStatusData } from "./ProductData";
 import SimpleBar from "simplebar-react";
 import { set, useForm } from "react-hook-form";
 import ProductH from "../../../../images/product/h.png";
@@ -33,7 +32,6 @@ import { BaseURL } from "../../../../config/config";
 // const socket = io.connect("http://localhost:3000");
 
 const Machine = () => {
-   const MachineDatas = MachineData
    const [data, setData] = useState([]);
    const [dataEmployee, setDataEmployee] = useState([]);
    const [sm, updateSm] = useState(false);

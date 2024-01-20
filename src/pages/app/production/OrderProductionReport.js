@@ -425,6 +425,16 @@ const OrderProductionReport = () => {
             statusValue.color = 'success'
             statusValue.value = 'FINISH'
             return statusValue
+         case 'CLOSED':
+            statusValue.status = 'CLOSED'
+            statusValue.color = 'dark'
+            statusValue.value = 'CLOSED'
+            return statusValue
+         case 'CANCEL':
+            statusValue.status = 'CANCEL'
+            statusValue.color = 'primary'
+            statusValue.value = 'CANCEL'
+            return statusValue
          case 'ON_HOLD':
             statusValue.status = 'ON HOLD'
             statusValue.color = 'warning'
@@ -682,34 +692,6 @@ const OrderProductionReport = () => {
                            </DataTableRow>
                            <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1">
-                                 {/* {item.status !== "Delivered" && (
-                                    <li className="nk-tb-action-hidden" onClick={() => markAsDelivered(item.id)}>
-                                       <TooltipComponent
-                                          tag="a"
-                                          containerClassName="btn btn-trigger btn-icon"
-                                          id={"delivery" + item.id}
-                                          icon="truck"
-                                          direction="top"
-                                          text="Mark as Delivered"
-                                       />
-                                    </li>
-                                 )} */}
-                                 {/* <li
-                                    className="nk-tb-action-hidden"
-                                    onClick={() => {
-                                       loadDetail(item.id);
-                                       toggle("details");
-                                    }}
-                                 >
-                                    <TooltipComponent
-                                       tag="a"
-                                       containerClassName="btn btn-trigger btn-icon"
-                                       id={"view" + item.id}
-                                       icon="eye"
-                                       direction="top"
-                                       text="View Details"
-                                    />
-                                 </li> */}
                                  <li>
                                     <UncontrolledDropdown>
                                        <DropdownToggle tag="a" className="btn btn-icon dropdown-toggle btn-trigger">
@@ -739,21 +721,6 @@ const OrderProductionReport = () => {
                                                    <span>Buat Laporan Harian</span>
                                                 </DropdownItem>
                                              </li>
-                                             {/* {item.status !== "Delivered" && (
-                                                <li>
-                                                   <DropdownItem
-                                                      tag="a"
-                                                      href="#dropdown"
-                                                      onClick={(ev) => {
-                                                         ev.preventDefault();
-                                                         markAsDelivered(item.id);
-                                                      }}
-                                                   >
-                                                      <Icon name="truck"></Icon>
-                                                      <span>Mark as Delivered</span>
-                                                   </DropdownItem>
-                                                </li>
-                                             )} */}
                                              <li>
                                                 <DropdownItem
                                                    tag="a"

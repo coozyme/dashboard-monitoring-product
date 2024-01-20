@@ -141,6 +141,10 @@ import OrderProduction from "../pages/app/production/OrderProduction";
 import OrderProductionReport from "../pages/app/production/OrderProductionReport";
 import CreateDailyReportProduction from "../pages/app/production-report/CreateDailyReport";
 import DetailReportProduction from "../pages/app/production-report/DetailReport";
+import Role from "../pages/app/role/Role";
+import Issue from "../pages/app/categories/issue/Issue";
+import UserProfile from "../pages/app/user/UserProfile";
+import UserSetting from "../pages/app/user/UserSetting";
 
 const Router = () => {
   const location = useLocation();
@@ -204,11 +208,17 @@ const Router = () => {
         <Route path="production-report/create-report" element={<CreateDailyReportProduction />}></Route>
         <Route path="production-report/detail-report" element={<DetailReportProduction />}></Route>
 
+        {/* Categories Issue */}
+        <Route path="categories-issue" element={<Issue />}></Route>
         {/*Configuration Pages*/}
         <Route path="machine" element={<Machine />}></Route>
         <Route element={<EmployeeContextProvider />} >
-          <Route path="employee-list" element={<EmployeePage />}></Route>
+          <Route path="employee" element={<EmployeePage />}></Route>
         </Route>
+        <Route path="role" element={<Role />}></Route>
+
+        <Route path="user/profile" element={<UserProfile />}></Route>
+        <Route path="user/setting" element={<UserSetting />}></Route>
 
         {/*Pre-built Pages*/}
         <Route path="project-card" element={<ProjectCardPage />}></Route>
