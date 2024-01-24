@@ -41,8 +41,8 @@ const CreateDailyReportProduction = () => {
    const [dataUser, setDataUser] = useState({});
    const [dataInformationProduksi, setDataInformationProduksi] = useState({
       productionId: state?.productionId,
-      reportedBy: false,
-      issueId: false,
+      reportedBy: null,
+      issueId: null,
       issueName: "",
       notes: "",
       productionDate: "",
@@ -53,9 +53,9 @@ const CreateDailyReportProduction = () => {
    const [formData, setFormData] = useState({
       id: false,
       productionId: state?.productionId,
-      reportedBy: false,
+      reportedBy: null,
       material: "",
-      issueId: false,
+      issueId: null,
       issueName: "",
       quantity: 0,
       unit: "Meter",
@@ -563,7 +563,7 @@ const CreateDailyReportProduction = () => {
                   <BlockHeadContent>
 
                      <BlockTitle>
-                        Buat Laporan Order
+                        Buat Laporan Produksi
                         <strong className="text-primary small"> #{state.orderId}</strong >
                      </BlockTitle>
                   </BlockHeadContent>
@@ -666,12 +666,12 @@ const CreateDailyReportProduction = () => {
                                  <div className="data-value">{dataInformationProduksi.productionDate}</div>
                               </div>
                            </li>
-                           <li className="data-item">
+                           {/* <li className="data-item">
                               <div className="data-col">
                                  <div className="data-label">Total Produksi Satuan Meter</div>
                                  <div className="data-value">{totalInMeter} Meter</div>
                               </div>
-                           </li>
+                           </li> */}
                            {
                               totalInKg > 0 && (
                                  <li className="data-item">

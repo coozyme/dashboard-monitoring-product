@@ -63,7 +63,7 @@ const EmployeePage = () => {
       isActive: false,
    });
    const [currentPage, setCurrentPage] = useState(1);
-   const [itemPerPage] = useState(10);
+   const [itemPerPage] = useState(7);
 
    // unselects the data on mount
    useEffect(() => {
@@ -84,13 +84,13 @@ const EmployeePage = () => {
       if (onSearchText !== "") {
          const filteredObject = data.filter((item) => {
             return (
-               item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
-               item.email.toLowerCase().includes(onSearchText.toLowerCase())
+               item.fullname.toLowerCase().includes(onSearchText.toLowerCase()) ||
+               item.username.toLowerCase().includes(onSearchText.toLowerCase())
             );
          });
          setData([...filteredObject]);
       } else {
-         setData([...data]);
+         fetchDataEmployee()
       }
    }, [onSearchText, setData]);
 

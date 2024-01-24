@@ -2,15 +2,16 @@ const MenuMonev = [
    {
       heading: "Dashboards",
    },
-   {
-      icon: "growth-fill",
-      text: "Analytics",
-      link: "/analytics",
-   },
+   // {
+   //    icon: "growth-fill",
+   //    text: "Analytics",
+   //    link: "/analytics",
+   // },
    {
       icon: "growth-fill",
       text: "Production Analytics",
-      link: "/productions-analytics",
+      link: "/",
+      key: "dashboard_monitoring_produksi",
    },
    {
       heading: "Orders Process",
@@ -19,6 +20,7 @@ const MenuMonev = [
       icon: "card-view",
       text: "Order Production",
       link: "/order-production",
+      key: "order_production",
    },
    {
       heading: "Productions",
@@ -27,6 +29,7 @@ const MenuMonev = [
       icon: "card-view",
       text: "Production Report",
       link: "/production-report",
+      key: "production_report",
    },
    {
       heading: "Categories",
@@ -35,6 +38,7 @@ const MenuMonev = [
       icon: "dot-box-fill",
       text: "Issue",
       link: "/categories-issue",
+      key: "category_issue",
    },
    {
       heading: "Configuration",
@@ -43,11 +47,15 @@ const MenuMonev = [
       icon: "setting-fill",
       text: "Machine",
       link: "/machine",
-      key: "configure_machine",
+      key: "configuration_machine",
+   },
+   {
+      heading: "Manage",
    },
    {
       icon: "users-fill",
       text: "User Manage",
+      key: "management_user",
       active: false,
       subMenu: [
          {
@@ -58,7 +66,7 @@ const MenuMonev = [
          {
             text: "Role",
             link: "/role",
-            key: "management_user",
+            key: "management_role",
          },
       ],
    },

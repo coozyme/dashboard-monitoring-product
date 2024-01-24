@@ -184,6 +184,7 @@ const Role = () => {
    };
 
    const handleChecklistMenu = (id, checked) => {
+      console.log('LOG-handleChecklistMenu', id, checked)
       let newData = checklistMenu;
       let index = newData?.findIndex((item) => item.id === id);
       newData[index].checklist = checked;
@@ -218,8 +219,9 @@ const Role = () => {
    }
 
    const onFormUpdateRole = async () => {
+      console.log('LOG-onFormUpdateRole')
       const { nama, id } = formData;
-      const checklist = checklistMenu?.filter((item) => item.checklist == true)
+      const checklist = checklistMenu?.filter((item) => item?.checklist == true)
 
       let idMenu = checklist.map(({ id }) => id)
       console.log('LOG-idMenu', idMenu)
@@ -926,17 +928,16 @@ const Role = () => {
                               {checklistMenu?.length > 0 ? checklistMenu.map((item, idx) => {
                                  return (
                                     <Col sm="6" md="8" className="m-lg-3">
-                                       <div className="custom-control custom-checkbox">
+                                       <div className="custom-control custom-checkbox" id={idx}>
                                           <input
                                              type="checkbox"
                                              className="custom-control-input"
-                                             defaultChecked
                                              checked={item?.checklist}
                                              onChange={(e) => { handleChecklistMenu(item.id, e.target.checked) }}
-                                             value={item?.checklist}
-                                             id={"customCheck" + idx}
+                                             // value={item?.checklist}
+                                             id={"customCheck0" + item?.id + idx}
                                           />
-                                          <label className="custom-control-label" htmlFor={"customCheck" + idx}>
+                                          <label className="custom-control-label" htmlFor={"customCheck0" + item?.id + idx}>
                                              {item.name}
                                           </label>
                                        </div>

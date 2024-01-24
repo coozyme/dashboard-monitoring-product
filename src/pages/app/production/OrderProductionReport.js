@@ -65,11 +65,12 @@ const OrderProductionReport = () => {
    useEffect(() => {
       if (onSearchText !== "") {
          const filteredObject = data.filter((item) => {
-            return item.orderId.includes(onSearchText);
+            return item?.orderId.includes(onSearchText);
          });
          setData([...filteredObject]);
       } else {
-         setData([...data]);
+         fetchDataOrderProductions()
+         // setData([...data]);
       }
    }, [onSearchText]);
 
@@ -478,7 +479,7 @@ const OrderProductionReport = () => {
                         </a>
                         <div className="toggle-expand-content" style={{ display: smOption ? "block" : "none" }}>
                            <ul className="nk-block-tools g-3">
-                              {/* <li>
+                              <li>
                                  <div className="form-control-wrap">
                                     <div className="form-icon form-icon-right">
                                        <Icon name="search"></Icon>
@@ -487,11 +488,11 @@ const OrderProductionReport = () => {
                                        type="text"
                                        className="form-control"
                                        id="default-04"
-                                       placeholder="Search by orderId"
+                                       placeholder="Search by orderID"
                                        onChange={(e) => onFilterChange(e)}
                                     />
                                  </div>
-                              </li> */}
+                              </li>
                               {/* <li>
                                  <UncontrolledDropdown>
                                     <DropdownToggle

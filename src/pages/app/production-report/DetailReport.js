@@ -40,6 +40,7 @@ const DetailReportProduction = () => {
    const [dataIssue, setDataIssue] = useState([]);
    const [dataUser, setDataUser] = useState({});
    const [isOperator, setIsOperator] = useState(false);
+   const [isChecklistedAllMaterial, setIsChecklistedAllMaterial] = useState(false);
    const [dataInformationProduksi, setDataInformationProduksi] = useState({
       productionId: state?.productionId,
       reportedBy: false,
@@ -150,6 +151,32 @@ const DetailReportProduction = () => {
    }
 
 
+   const fetchCheckAllReportChecklist = async () => {
+      await axios.get(`${BaseURL}/product/detail-reporting-production?productionId=${state.productionId}`)
+         .then((res) => {
+            console.log('LOG-fetchDataDetailReport', res)
+            const data = res.data.data
+            if (data) {
+               // setDataInformationProduksi({
+               //    productionId: data.productionId,
+               //    reportedBy: data.reportedBy,
+               //    issueId: data.issueId,
+               //    issueName: data.issueName,
+               //    notes: data.notes,
+               //    productionDate: data.productionDate,
+               // })
+               // setData(data.materialData)
+               // set
+               // sycnTotalProduksi(data.materialData)
+               // setData(data.productionDetail)
+               setIsChecklistedAllMaterial(data.isChecklistedAllMaterial)
+            }
+            console.log('LOG-fetchDataDetailReport-data', data.productionDetail)
+         }).catch((err) => {
+            console.log('LOG-ERR-fetchDataDetailReport', err)
+         })
+   }
+
    const fetchDataDetailReport = async () => {
       await axios.get(`${BaseURL}/product/detail-reporting-production?productionId=${state.productionId}`)
          .then((res) => {
@@ -168,12 +195,14 @@ const DetailReportProduction = () => {
                // set
                // sycnTotalProduksi(data.materialData)
                setData(data.productionDetail)
+               setIsChecklistedAllMaterial(data.isChecklistedAllMaterial)
             }
             console.log('LOG-fetchDataDetailReport-data', data.productionDetail)
          }).catch((err) => {
             console.log('LOG-ERR-fetchDataDetailReport', err)
          })
    }
+
    const fetchDataIssueCategories = async () => {
       const issues = []
 
@@ -202,17 +231,36 @@ const DetailReportProduction = () => {
       console.log('LOG-handleChecklist', reportDailyId, materialId, materialDataIndex, isChecked)
       const approverId = dataUser.employeeId
       let url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&materialId=${materialId}`
-      if (approverId !== 1) {
-         url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&materialId=${materialId}&reportDailyId=${reportDailyId}&approverId=${approverId}`
-      }
+      // if (approverId !== 1) {
+      //    url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&reportDailyId=${reportDailyId}&approverId=${approverId}`
+      // }
 
-      await axios.put(url).then((res) => {
+      await axios.post(url).then((res) => {
          console.log('LOG-issue', res)
-         data.find((item, index) => {
-            if (item.id == reportDailyId) {
-               item.materialData[materialDataIndex].isChecklistApproved = isChecked
-            }
-         })
+         // fetchCheckAllReportChecklist()
+         fetchDataDetailReport()
+         // data.find((item, index) => {
+         //    if (item.id == reportDailyId) {
+         //       item.materialData[materialDataIndex].isChecklistApproved = isChecked
+         //    }
+         // })
+      }).catch((err) => {
+         console.log("LOG-ERROR-GetIssueCategory: ", err)
+      })
+   }
+
+   const handleApproveReport = async (reportDailyId, isChecklistedAllMaterial) => {
+      console.log('LOG-handleApproveReport', reportDailyId, isChecklistedAllMaterial)
+      const approverId = dataUser.employeeId
+      let url = `${BaseURL}/product/approve-report?approverId=${approverId}&reportDailyId=${reportDailyId}&isChecklistAllMaterial=${isChecklistedAllMaterial}`
+      // if (approverId !== 1) {
+      //    url = `${BaseURL}/product/approve-checklist?isApprove=${isChecked}&reportDailyId=${reportDailyId}&approverId=${approverId}`
+      // }
+
+      await axios.post(url).then((res) => {
+         console.log('LOG-issue', res)
+         fetchDataDetailReport()
+         // fetchCheckAllReportChecklist()
       }).catch((err) => {
          console.log("LOG-ERROR-GetIssueCategory: ", err)
       })
@@ -686,7 +734,7 @@ const DetailReportProduction = () => {
                                     <li className="data-item ">
                                        <div className="data-col">
                                           <div className="data-label">Issue Produksi</div>
-                                          <div className="data-value">{itemProduksi.issueName ?? " - Tidak ada masalah -"}</div>
+                                          <div className="data-value">{itemProduksi.issueName ?? "-"}</div>
                                        </div>
                                     </li>
                                     <li className="data-item ">
@@ -723,16 +771,19 @@ const DetailReportProduction = () => {
                                  !isOperator && (
                                     <BlockHeadContent className="mt-2">
                                        <Button
-                                          disabled={data?.length === 0 || dataInformationProduksi.productionDate == "" || loadingButtonSubmit}
+                                          // disabled={data?.length === 0 || loadingButtonSubmit || !isChecklistedAllMaterial}
+                                          disabled={data?.length === 0 || loadingButtonSubmit || !itemProduksi.isChecklistedAllMaterial || itemProduksi.approverId}
                                           className="toggle d-none d-md-inline-flex"
                                           color="info"
                                           onClick={() => {
                                              // toggle("add");
-                                             submitData()
+                                             // submitData()
+                                             handleApproveReport(itemProduksi.id, isChecklistedAllMaterial)
+                                             // handleChecklist(itemProduksi.id, itemProduksi.materialData[0].id, 0, true)
                                           }}
                                        >
                                           {loadingButtonSubmit && <Spinner size="sm" type="grow" />}
-                                          {!loadingButtonSubmit ? <span>Approve Report</span> : <span> Loading... </span>}
+                                          {itemProduksi.approverId ? <span>Approved</span> : !loadingButtonSubmit ? <span>Approve Report</span> : <span> Loading... </span>}
                                           {/* <Icon name="chevron-down"></Icon> */}
                                        </Button>
                                     </BlockHeadContent>
@@ -793,13 +844,13 @@ const DetailReportProduction = () => {
                                                          type="checkbox"
                                                          className="custom-control-input"
                                                          // defaultChecked
-                                                         disabled={isOperator}
+                                                         disabled={(isOperator || itemProduksi.approverId)}
                                                          checked={item.isChecklistApproved}
                                                          onChange={(e) => { handleChecklist(itemProduksi.id, item.id, idx, e.target.checked) }}
                                                          // value={item.checklistApproved}
-                                                         id={"customCheck2" + idx}
+                                                         id={"customCheck02" + item.id}
                                                       />
-                                                      <label className="custom-control-label" htmlFor={"customCheck2" + idx}>
+                                                      <label className="custom-control-label" htmlFor={"customCheck02" + item.id}>
 
                                                       </label>
                                                    </div>

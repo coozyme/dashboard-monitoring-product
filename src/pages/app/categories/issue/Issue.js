@@ -150,8 +150,11 @@ const Issue = () => {
       reset({});
    };
 
-   const handleAlert = (isSuccess) => {
-      let message = "Your work has been saved"
+   const handleAlert = (isSuccess, message) => {
+      if (message == "") {
+         message = "Your work has been saved"
+      }
+
       if (isSuccess) {
          Swal.fire({
             position: "top-end",

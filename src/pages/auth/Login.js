@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Logo from "../../images/logo.png";
-import LogoDark from "../../images/logo-dark.png";
+import Logo from "../../images/logo-monev.png";
+// import LogoDark from "../../images/logo-dark.png";
 import Head from "../../layout/head/Head";
 import AuthFooter from "./AuthFooter";
 import {
@@ -33,17 +33,10 @@ const Login = () => {
     }
 
     await axios.post(`${BaseURL}/auth/login`, data).then(res => {
-      console.log("LOG-res", res)
-      localStorage.setItem("accessToken", res?.data?.data?.token);
-      setTimeout(() => {
-        window.history.pushState(
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-          "auth-login",
-          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
-        );
-        window.location.reload();
-      }, 1000);
-      fetchDataUser();
+      console.log("LOG-res-auth", res)
+      const token = res?.data?.data?.token
+      fetchDataUser(token);
+      setLoading(false);
     }).catch(err => {
       console.log("LOG-err", err)
 
@@ -52,14 +45,32 @@ const Login = () => {
     })
   };
 
-  const fetchDataUser = async () => {
+  const fetchDataUser = async (accessToken) => {
     await axios.get(`${BaseURL}/user`, {
       headers: {
-        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+        "Authorization": `Bearer ${accessToken}`
       }
     }).then(res => {
+      const data = res?.data?.data;
+
+      if (data?.menu?.length === 0) {
+        setError("You don't have access to this system");
+        return;
+      }
+
       console.log("LOG-res", res)
-      localStorage.setItem("user", JSON.stringify(res?.data?.data));
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("user", JSON.stringify(data));
+
+      setTimeout(() => {
+        window.history.pushState(
+          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
+          "auth-login",
+          `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
+        );
+        window.location.reload();
+      }, 1000);
+
     }).catch(err => {
       console.log("LOG-err", err)
     })
@@ -73,7 +84,7 @@ const Login = () => {
       <div className="brand-logo pb-4 text-center">
         <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
           <img className="logo-light logo-img logo-img-lg" src={Logo} alt="logo" />
-          <img className="logo-dark logo-img logo-img-lg" src={LogoDark} alt="logo-dark" />
+          <img className="logo-dark logo-img logo-img-lg" src={Logo} alt="logo-dark" />
         </Link>
       </div>
 
@@ -82,7 +93,7 @@ const Login = () => {
           <BlockContent>
             <BlockTitle tag="h4">Sign-In</BlockTitle>
             <BlockDes>
-              <p>Access Dashlite using your email and passcode.</p>
+              <p>Access Monitoring & Evaluation Sistem using your username and password.</p>
             </BlockDes>
           </BlockContent>
         </BlockHead>

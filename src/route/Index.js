@@ -1,5 +1,5 @@
-import React, { useLayoutEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import React, { useLayoutEffect, useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { CustomerProvider } from "../pages/panel/e-commerce/customer/CustomerContext";
 import { ProductContextProvider } from "../pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "../pages/pre-built/user-manage/UserContext";
@@ -145,12 +145,33 @@ import Role from "../pages/app/role/Role";
 import Issue from "../pages/app/categories/issue/Issue";
 import UserProfile from "../pages/app/user/UserProfile";
 import UserSetting from "../pages/app/user/UserSetting";
+import ProductionAnalytic from "../pages/app/dashboard/ProductionsAnalytic";
 
 const Router = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
+
+  useEffect(() => {
+    handlingAuth()
+  })
+  const handlingAuth = () => {
+
+    const dataUser = JSON.parse(localStorage?.getItem("user"));
+    if (!dataUser) {
+      navigate(`${process.env.PUBLIC_URL}/auth-login`);
+      return null
+    }
+
+    const menuAccessUser = dataUser?.menu
+
+    if (menuAccessUser?.length == 0) {
+      navigate(`${process.env.PUBLIC_URL}/auth-login`);
+      return null
+    }
+  }
 
   return (
     <Routes>
@@ -183,7 +204,7 @@ const Router = () => {
       <Route path={`${process.env.PUBLIC_URL}`} element={<Layout />}>
 
         {/*Dashboards*/}
-        <Route index element={<Homepage />}></Route>
+        <Route element={<Homepage />}></Route>
         <Route path="sales" element={<Sales />}></Route>
         <Route path="analytics" element={<Analytics />}></Route>
         <Route path="_blank" element={<Blank />}></Route>
@@ -202,6 +223,8 @@ const Router = () => {
         </Route>
 
         {/* Monev Route */}
+        <Route index element={<ProductionAnalytic />}></Route>
+
         <Route path="order-production" element={<OrderProduction />}></Route>
         <Route path="productions-analitycs" element={<OrderProduction />}></Route>
         <Route path="production-report" element={<OrderProductionReport />}></Route>

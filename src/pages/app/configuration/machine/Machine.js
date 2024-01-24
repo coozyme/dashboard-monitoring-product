@@ -294,7 +294,6 @@ const Machine = () => {
 
    return (
       <React.Fragment>
-         {console.log('LOG-DATA', data)}
          <Head title="Machine List"></Head>
          <Content>
             <BlockHead size="sm">

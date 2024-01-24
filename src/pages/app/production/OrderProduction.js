@@ -26,6 +26,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { BaseURL } from "../../../config/config";
 import moment from "moment/moment";
+import Swal from "sweetalert2";
 
 const OrderProduction = () => {
    const [data, setData] = useState([]);
@@ -67,7 +68,8 @@ const OrderProduction = () => {
          });
          setData([...filteredObject]);
       } else {
-         setData([...data]);
+         fetchDataOrderProductions()
+         // setData([...data]);
       }
    }, [onSearchText]);
 
@@ -170,6 +172,34 @@ const OrderProduction = () => {
       setRangeDate({ start: start, end: end });
    };
 
+   const handleAlert = (isSuccess, message) => {
+      if (message == "") {
+         message = "Your work has been saved"
+      }
+
+      if (isSuccess) {
+         Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: message,
+            showConfirmButton: false,
+            timer: 1500,
+         });
+      } else {
+         if (message == "") {
+            message = "Something went wrong"
+         }
+
+         Swal.fire({
+            icon: "error",
+            title: "Failed to Save the Data",
+            text: message,
+            focusConfirm: false,
+            // footer: "<a href=''> Why do I have this issue? </a>",
+         });
+         event?.preventDefault()
+      }
+   }
    // selects all the order
    const selectorCheck = (e) => {
       let newData;
@@ -205,7 +235,23 @@ const OrderProduction = () => {
    };
 
    const onFormSubmit = async (form) => {
-      const { customer, purchased, total } = form;
+      console.log('LOG-submittedData-onFormSubmit', formData)
+      const startProductionDate = rangeDate?.start?.toLocaleDateString()
+      const endProductionDate = rangeDate?.end?.toLocaleDateString()
+      if (formData?.orderId == "") {
+         handleAlert(false, "Failed create order production, orderId cannot be empty")
+         return
+      } else if (formData?.customer == "") {
+         handleAlert(false, "Failed create order production, customer cannot be empty")
+         return
+      } else if (formData?.machineId == 0) {
+         handleAlert(false, "Failed create order production, must choose machine")
+         return
+      } else if (!startProductionDate || !endProductionDate) {
+         handleAlert(false, "Failed create order production, must select production date")
+         return
+      }
+
       let submittedData = {
          orderId: formData.orderId,
          customer: formData.customer,
@@ -215,10 +261,9 @@ const OrderProduction = () => {
          targetDaily: formData.targetDaily,
          unit: formData.unit,
          status: formData.status,
-         startProductionDate: rangeDate.start.toLocaleDateString(),
-         endProductionDate: rangeDate.end.toLocaleDateString()
+         startProductionDate: startProductionDate,
+         endProductionDate: endProductionDate
       };
-      console.log('LOG-submittedData', submittedData)
 
       const payload = {
          orderId: submittedData.orderId,
@@ -229,20 +274,39 @@ const OrderProduction = () => {
          startProductionDate: submittedData.startProductionDate,
          endProductionDate: submittedData.endProductionDate,
       }
+
+
       console.log('LOG-submittedData-payload', payload)
 
       await axios.post(`${BaseURL}/product/add-order-production`, payload)
          .then((res) => {
-            setData([submittedData, ...data]);
+            handleAlert(true, "Success create order production")
+            // setData([submittedData, ...data]);
+            fetchDataOrderProductions()
             setView({ add: false, details: false, edit: false });
             resetForm();
          }).catch((err) => {
+            handleAlert(false, "Failed create order production")
             console.log('LOG-ERR-POST-DATA', err)
          })
    };
 
    const onFormEdit = async (form) => {
-      const { customer, purchased, total } = form;
+      const startProductionDate = rangeDate?.start?.toLocaleDateString()
+      const endProductionDate = rangeDate?.end?.toLocaleDateString()
+      if (formData.orderId == "") {
+         handleAlert(false, "Failed create order production, orderId cannot be empty")
+         return
+      } else if (formData.customer == "") {
+         handleAlert(false, "Failed create order production, customer cannot be empty")
+         return
+      } else if (formData.machineId == 0) {
+         handleAlert(false, "Failed create order production, must choose machine")
+         return
+      } else if (!startProductionDate || !endProductionDate) {
+         handleAlert(false, "Failed create order production, must select production date")
+         return
+      }
       let submittedData = {
          orderId: formData.orderId,
          customer: formData.customer,
@@ -274,8 +338,10 @@ const OrderProduction = () => {
             fetchDataOrderProductions()
             // setData([submittedData, ...data]);
             setView({ add: false, details: false, edit: false });
+            handleAlert(true, "Success update order production")
             resetForm();
          }).catch((err) => {
+            handleAlert(false, "Failed update order production")
             console.log('LOG-ERR-POST-DATA', err)
          })
 
@@ -433,7 +499,7 @@ const OrderProduction = () => {
                         </a>
                         <div className="toggle-expand-content" style={{ display: smOption ? "block" : "none" }}>
                            <ul className="nk-block-tools g-3">
-                              {/* <li>
+                              <li>
                                  <div className="form-control-wrap">
                                     <div className="form-icon form-icon-right">
                                        <Icon name="search"></Icon>
@@ -442,11 +508,11 @@ const OrderProduction = () => {
                                        type="text"
                                        className="form-control"
                                        id="default-04"
-                                       placeholder="Search by orderId"
+                                       placeholder="Search by orderID"
                                        onChange={(e) => onFilterChange(e)}
                                     />
                                  </div>
-                              </li> */}
+                              </li>
                               {/* <li>
                                  <UncontrolledDropdown>
                                     <DropdownToggle

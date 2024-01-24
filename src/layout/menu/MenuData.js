@@ -67,7 +67,7 @@ const menu = [
   {
     icon: "growth-fill",
     text: "Production Analytics",
-    link: "/productions-analytics",
+    link: "/",
   },
   {
     heading: "Orders Process",

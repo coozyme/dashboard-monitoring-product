@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import menu from "./MenuData";
 import menu from "./MenuMonev";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
 
@@ -12,6 +12,7 @@ const MenuHeading = ({ heading }) => {
     </li>
   );
 };
+
 
 const MenuItem = ({ icon, link, text, sub, subPanel, panel, newTab, mobileView, sidebarToggle, badge, ...props }) => {
   let currentUrl;
@@ -262,15 +263,41 @@ const MenuSub = ({ icon, link, text, sub, sidebarToggle, mobileView, ...props })
 
 const Menu = ({ sidebarToggle, mobileView }) => {
   const [data, setMenuData] = useState(menu);
+  const navigate = useNavigate();
+
+  const dataUser = JSON.parse(localStorage?.getItem("user"));
+  if (!dataUser) {
+    navigate(`${process.env.PUBLIC_URL}/auth-login`);
+    return null
+  }
+
+  const menuAccessUser = dataUser?.menu
+
+  if (menuAccessUser?.length == 0) {
+    navigate(`${process.env.PUBLIC_URL}/auth-login`);
+    return null
+  }
 
   useEffect(() => {
     data.forEach((item, index) => {
+      // console.log('LOG-menuAccessUser', menuAccessUser)
+      // const asd = menuAccessUser.filter((menu) => menu?.menu_key === item?.key)
+
+      // console.log('LOG-asd', asd);
+      console.log('LOG-ITEM', item);
       if (item.panel) {
         let found = item.subPanel.find((sPanel) => process.env.PUBLIC_URL + sPanel.link === window.location.pathname);
         if (found) {
           setMenuData([menu[index]]);
         }
       }
+
+      // data.forEach(item => {
+      //   dat
+      // });
+      // data.filter((item) => {
+
+      // });
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -294,7 +321,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
           />
         ) : (
           <MenuItem
-            key={item.text}
+            key={item.key}
             link={item.link}
             icon={item.icon}
             text={item.text}
