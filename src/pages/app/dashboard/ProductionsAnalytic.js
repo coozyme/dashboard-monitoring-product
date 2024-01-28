@@ -5,6 +5,7 @@ import AudienceOverview from "../../../components/partials/analytics/audience-ov
 import ActiveUser from "../../../components/partials/analytics/active-user/ActiveUser";
 import StatusMachine from "./component/StatusMachine";
 import TrafficStatusProduction from "./component/TrafficStatusProduction";
+import TrafficIssueProduction from "./component/TrafficIssueProduction";
 import TrafficChannel from "../../../components/partials/analytics/traffic-channel/Traffic";
 import TrafficDougnut from "../../../components/partials/analytics/traffic-dougnut/TrafficDoughnut";
 import UserMap from "../../../components/partials/analytics/user-map/UserMap";
@@ -125,6 +126,11 @@ const ProductionAnalytic = () => {
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
                         <TrafficStatusProduction />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col md="6" lg="5" xxl="3">
+                     <PreviewAltCard className="h-100">
+                        <TrafficIssueProduction />
                      </PreviewAltCard>
                   </Col>
                   {/* <Col lg="7" xxl="6">
