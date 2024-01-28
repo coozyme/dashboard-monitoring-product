@@ -41,7 +41,7 @@ const StatusMachine = () => {
       <React.Fragment>
          <div className="card-title-group align-start pb-3 g-2">
             <div className="card-title card-title-sm">
-               <h6 className="title">Status Machines</h6>
+               <h6 className="title">Status Mesin</h6>
                {/* <p>How has performend this month.</p> */}
             </div>
             <div className="card-tools">
