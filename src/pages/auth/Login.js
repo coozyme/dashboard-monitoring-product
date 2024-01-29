@@ -36,7 +36,6 @@ const Login = () => {
       console.log("LOG-res-auth", res)
       const token = res?.data?.data?.token
       fetchDataUser(token);
-      setLoading(false);
     }).catch(err => {
       console.log("LOG-err", err)
 
@@ -69,10 +68,11 @@ const Login = () => {
           `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
         );
         window.location.reload();
-      }, 1000);
-
+      }, 100);
+      setLoading(false);
     }).catch(err => {
       console.log("LOG-err", err)
+      setLoading(false);
     })
   }
 
