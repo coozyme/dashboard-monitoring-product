@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-// import menu from "./MenuData";
-import menu from "./MenuMonev";
+import menu from "./MenuData";
+// import menu from "./MenuMonev";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
@@ -285,12 +285,18 @@ const Menu = ({ sidebarToggle, mobileView }) => {
 
       // console.log('LOG-asd', asd);
       console.log('LOG-ITEM', item);
+      console.log('LOG-menuAccessUser', menuAccessUser);
+
+
       if (item.panel) {
         let found = item.subPanel.find((sPanel) => process.env.PUBLIC_URL + sPanel.link === window.location.pathname);
         if (found) {
           setMenuData([menu[index]]);
         }
       }
+
+
+      // menuAccessUser.find((d) => d)
 
       // data.forEach(item => {
       //   dat

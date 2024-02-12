@@ -6,6 +6,7 @@ import ActiveUser from "../../../components/partials/analytics/active-user/Activ
 import StatusMachine from "./component/StatusMachine";
 import TrafficStatusProduction from "./component/TrafficStatusProduction";
 import TrafficIssueProduction from "./component/TrafficIssueProduction";
+import TotalCardComponent from "./component/TotalCardComponent";
 import TrafficChannel from "../../../components/partials/analytics/traffic-channel/Traffic";
 import TrafficDougnut from "../../../components/partials/analytics/traffic-dougnut/TrafficDoughnut";
 import UserMap from "../../../components/partials/analytics/user-map/UserMap";
@@ -118,6 +119,21 @@ const ProductionAnalytic = () => {
                         <ActiveUser />
                      </PreviewAltCard>
                   </Col> */}
+                  <Col lg="4" xxl="4">
+                     <PreviewAltCard className="h-100">
+                        <TotalCardComponent title="Total Order Produksi" />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col lg="4" xxl="4">
+                     <PreviewAltCard className="h-100">
+                        <TotalCardComponent title="Total Order Produksi" />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col lg="4" xxl="4">
+                     <PreviewAltCard className="h-100">
+                        <TotalCardComponent title="Total Order Produksi" />
+                     </PreviewAltCard>
+                  </Col>
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
                         <StatusMachine />
@@ -133,11 +149,7 @@ const ProductionAnalytic = () => {
                         <TrafficIssueProduction />
                      </PreviewAltCard>
                   </Col>
-                  {/* <Col lg="7" xxl="6">
-                     <Card className="h-100">
-                        <TrafficChannel />
-                     </Card>
-                  </Col> */}
+
                   {/* <Col md="6" xxl="3">
                      <PreviewAltCard className="h-100">
                         <TrafficDougnut />
