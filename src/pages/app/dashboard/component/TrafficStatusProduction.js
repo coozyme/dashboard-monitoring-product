@@ -5,36 +5,37 @@ import { DropdownToggle, DropdownMenu, UncontrolledDropdown, DropdownItem, Spinn
 import { BaseURL } from "../../../../config/config";
 import { TCDoughnut } from './Chart';
 import axios from "axios";
-const TrafficStatusProduction = () => {
+const TrafficStatusProduction = ({ dataStatus }) => {
    const [traffic, setTraffic] = useState("30");
    const [data, setData] = useState([]);
-   const [spinner, setSpinner] = useState(false);
+   // const [spinner, setSpinner] = useState(false);
 
 
-   const fetchStatusProductions = async () => {
+   // const fetchStatusProductions = async () => {
 
-      await axios.get(`${BaseURL}/dashboard/status-productions`)
-         .then(res => {
-            console.log('DATA', res.data.data)
-            setData(res.data.data)
-            setSpinner(false)
-         }).catch(err => {
-            setSpinner(false)
-            console.log('LOG-ERR-DATA', err)
-         })
-   }
+   //    await axios.get(`${BaseURL}/dashboard/status-productions`)
+   //       .then(res => {
+   //          console.log('DATA', res.data.data)
+   //          setData(res.data.data)
+   //          setSpinner(false)
+   //       }).catch(err => {
+   //          setSpinner(false)
+   //          console.log('LOG-ERR-DATA', err)
+   //       })
+   // }
 
    useState(() => {
-      setSpinner(true)
-      fetchStatusProductions()
-      console.log('LOG-data-DD', data)
+      //    setSpinner(true)
+      //    fetchStatusProductions()
+      //    console.log('LOG-data-DD', data)
+      setData(dataStatus)
    })
 
-   const handleSpineer = () => {
-      return (
-         <Spinner color="primary" />
-      )
-   }
+   // const handleSpineer = () => {
+   //    return (
+   //       <Spinner color="primary" />
+   //    )
+   // }
 
    return (
       <React.Fragment>
@@ -88,10 +89,10 @@ const TrafficStatusProduction = () => {
          </div>
          <div className="traffic-channel">
             <div className="traffic-channel-doughnut-ck">
-               {spinner ? handleSpineer() :
+               {/* {spinner ? handleSpineer() : */}
 
-                  <TCDoughnut state={traffic} dataSet={data} className="analytics-doughnut"></TCDoughnut>
-               }
+               <TCDoughnut state={traffic} dataSet={data} className="analytics-doughnut"></TCDoughnut>
+               {/* } */}
             </div>
             <div className="traffic-channel-group g-2">
 

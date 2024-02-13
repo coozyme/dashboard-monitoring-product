@@ -13,7 +13,7 @@ import UserMap from "../../../components/partials/analytics/user-map/UserMap";
 import BrowserUser from "../../../components/partials/analytics/browser-users/BrowserUser";
 import PageViewer from "../../../components/partials/analytics/page-view/PageView";
 import SessionDevice from "../../../components/partials/analytics/session-devices/SessionDevice";
-import { DropdownToggle, DropdownMenu, Card, UncontrolledDropdown, DropdownItem } from "reactstrap";
+import { DropdownToggle, DropdownMenu, Card, UncontrolledDropdown, DropdownItem, Spinner } from "reactstrap";
 import {
    Block,
    BlockHead,
@@ -25,9 +25,53 @@ import {
    Col,
    PreviewAltCard,
 } from "../../../components/Component";
+import axios from "axios";
+import { BaseURL } from "../../../config/config";
 
 const ProductionAnalytic = () => {
    const [sm, updateSm] = useState(false);
+   const [spinner, setSpinner] = useState(false);
+   const [dataTrafficStatus, setDataTrafficStatus] = useState({});
+   const [dataApprovalStatus, setDataApprovalStatus] = useState({});
+
+
+
+   const fetchStatusProductions = async () => {
+      await axios.get(`${BaseURL}/dashboard/status-productions`)
+         .then(res => {
+            console.log('DATA', res.data.data)
+            setDataTrafficStatus(res.data.data)
+            setSpinner(false)
+         }).catch(err => {
+            setSpinner(false)
+            console.log('LOG-ERR-DATA', err)
+         })
+   }
+   const fetchStatusApprovalProductions = async () => {
+      await axios.get(`${BaseURL}/dashboard/total-status-checklist-approval`)
+         .then(res => {
+            console.log('DATA', res.data.data)
+            setDataApprovalStatus(res.data.data)
+            setSpinner(false)
+         }).catch(err => {
+            setSpinner(false)
+            console.log('LOG-ERR-DATA', err)
+         })
+   }
+
+   const handleSpineer = () => {
+      return (
+         <Spinner color="primary" />
+      )
+   }
+
+
+   useState(() => {
+      setSpinner(true)
+      fetchStatusProductions()
+      fetchStatusApprovalProductions()
+      // console.log('LOG-data-DD', data)
+   })
    return (
       <React.Fragment>
          <Head title="Analytics Dashboard" />
@@ -121,17 +165,17 @@ const ProductionAnalytic = () => {
                   </Col> */}
                   <Col lg="4" xxl="4">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent title="Total Order Produksi" />
+                        <TotalCardComponent key="00123" title="Total Order Produksi" total={dataTrafficStatus?.totalData} textInfo={`${dataTrafficStatus?.startDate} - ${dataTrafficStatus?.endDate}`} />
                      </PreviewAltCard>
                   </Col>
                   <Col lg="4" xxl="4">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent title="Total Order Produksi" />
+                        <TotalCardComponent key="0012" title="Total Laporan Approved" total={dataApprovalStatus.approved} textInfo={dataApprovalStatus.dateRange} />
                      </PreviewAltCard>
                   </Col>
                   <Col lg="4" xxl="4">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent title="Total Order Produksi" />
+                        <TotalCardComponent key="01242" title="Total Laporan Not Approved" total={dataApprovalStatus.notApproved} textInfo={dataApprovalStatus.dateRange} />
                      </PreviewAltCard>
                   </Col>
                   <Col md="6" lg="5" xxl="3">
@@ -141,7 +185,8 @@ const ProductionAnalytic = () => {
                   </Col>
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
-                        <TrafficStatusProduction />
+                        {spinner ? handleSpineer() : <TrafficStatusProduction dataStatus={dataTrafficStatus} />}
+                        {/* // <TrafficStatusProduction dataStatus={dataTrafficStatus} /> */}
                      </PreviewAltCard>
                   </Col>
                   <Col md="6" lg="5" xxl="3">
