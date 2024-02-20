@@ -257,16 +257,40 @@ const Router = () => {
         }></Route>
 
         {/* Categories Issue */}
-        <Route path="categories-issue" element={<Issue />}></Route>
+        <Route path="categories-issue" element={
+          <PrivateRoute>
+            <Issue />
+          </PrivateRoute>
+        }></Route>
         {/*Configuration Pages*/}
-        <Route path="machine" element={<Machine />}></Route>
+        <Route path="machine" element={
+          <PrivateRoute>
+            <Machine />
+          </PrivateRoute>
+        }></Route>
         <Route element={<EmployeeContextProvider />} >
-          <Route path="employee" element={<EmployeePage />}></Route>
+          <Route path="employee" element={
+            <PrivateRoute>
+              <EmployeePage />
+            </PrivateRoute>
+          }></Route>
         </Route>
-        <Route path="role" element={<Role />}></Route>
+        <Route path="role" element={
+          <PrivateRoute>
+            <Role />
+          </PrivateRoute>
+        }></Route>
 
-        <Route path="user/profile" element={<UserProfile />}></Route>
-        <Route path="user/setting" element={<UserSetting />}></Route>
+        <Route path="user/profile" element={
+          <PrivateRoute>
+            <UserProfile />
+          </PrivateRoute>
+        }></Route>
+        <Route path="user/setting" element={
+          <PrivateRoute>
+            <UserSetting />
+          </PrivateRoute>
+        }></Route>
 
         {/*Pre-built Pages*/}
         <Route path="project-card" element={<ProjectCardPage />}></Route>
