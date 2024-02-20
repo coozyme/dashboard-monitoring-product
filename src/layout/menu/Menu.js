@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import menu from "./MenuData";
-// import menu from "./MenuMonev";
+// import menu from "./MenuData";
+import menu from "./MenuMonev";
+import menuMonevStaff from "./MenuMonevStaff";
+import menuManager from "./MenuMonevManager";
+import menuOperator from "./MenuMonevOperator";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import Icon from "../../components/icon/Icon";
 import classNames from "classnames";
@@ -272,6 +275,7 @@ const Menu = ({ sidebarToggle, mobileView }) => {
   }
 
   const menuAccessUser = dataUser?.menu
+  const role = dataUser?.role?.id
 
   if (menuAccessUser?.length == 0) {
     navigate(`${process.env.PUBLIC_URL}/auth-login`);
@@ -279,6 +283,21 @@ const Menu = ({ sidebarToggle, mobileView }) => {
   }
 
   useEffect(() => {
+    console.log('LOG-PP', role == 2)
+    if (role === 1) {
+      setMenuData(menuOperator)
+    } else if (role === 2) {
+      setMenuData(menuMonevStaff)
+    } else if (role === 6) {
+      setMenuData(menuManager)
+    } else {
+      setMenuData(menu)
+    }
+  }, [data])
+
+  useEffect(() => {
+
+
     data.forEach((item, index) => {
       // console.log('LOG-menuAccessUser', menuAccessUser)
       // const asd = menuAccessUser.filter((menu) => menu?.menu_key === item?.key)

@@ -13,6 +13,15 @@ const MenuMonev = [
       link: "/",
       key: "dashboard_monitoring_produksi",
    },
+   {
+      heading: "Productions",
+   },
+   {
+      icon: "card-view",
+      text: "Production Report",
+      link: "/production-report",
+      key: "production_report",
+   },
 ]
 
 export default MenuMonev;

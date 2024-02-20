@@ -163,17 +163,22 @@ const ProductionAnalytic = () => {
                         <ActiveUser />
                      </PreviewAltCard>
                   </Col> */}
-                  <Col lg="4" xxl="4">
+                  <Col lg="3" xxl="3">
                      <PreviewAltCard className="h-100">
                         <TotalCardComponent key="00123" title="Total Order Produksi" total={dataTrafficStatus?.totalData} textInfo={`${dataTrafficStatus?.startDate} - ${dataTrafficStatus?.endDate}`} />
                      </PreviewAltCard>
                   </Col>
-                  <Col lg="4" xxl="4">
+                  <Col lg="3" xxl="3">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent key="0012" title="Total Laporan Approved" total={dataApprovalStatus.approved} textInfo={dataApprovalStatus.dateRange} />
+                        <TotalCardComponent key="0012" title="Total Laporan" total={dataApprovalStatus.totalChecklistApproval} textInfo={dataApprovalStatus.dateRange} />
                      </PreviewAltCard>
                   </Col>
-                  <Col lg="4" xxl="4">
+                  <Col lg="3" xxl="3">
+                     <PreviewAltCard className="h-100">
+                        <TotalCardComponent key="00343" title="Total Laporan Approved" total={dataApprovalStatus.approved} textInfo={dataApprovalStatus.dateRange} />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col lg="3" xxl="3">
                      <PreviewAltCard className="h-100">
                         <TotalCardComponent key="01242" title="Total Laporan Not Approved" total={dataApprovalStatus.notApproved} textInfo={dataApprovalStatus.dateRange} />
                      </PreviewAltCard>
