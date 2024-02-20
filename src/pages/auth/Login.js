@@ -32,6 +32,14 @@ const Login = () => {
       password: formData.password
     }
 
+    // try {
+    //   const res = await axios.post(`${BaseURL}/auth/login`, data)
+    //   const token = res?.data?.data?.token
+    //   fetchDataUser(token);
+    // } catch (error) {
+    //   setError(res?.response?.data?.message);
+    //   setLoading(false);
+    // }
     await axios.post(`${BaseURL}/auth/login`, data).then(res => {
       console.log("LOG-res-auth", res)
       const token = res?.data?.data?.token

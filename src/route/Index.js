@@ -146,7 +146,7 @@ import Issue from "../pages/app/categories/issue/Issue";
 import UserProfile from "../pages/app/user/UserProfile";
 import UserSetting from "../pages/app/user/UserSetting";
 import ProductionAnalytic from "../pages/app/dashboard/ProductionsAnalytic";
-
+import PrivateRoute from './privateRoute'
 const Router = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -154,24 +154,24 @@ const Router = () => {
     window.scrollTo(0, 0);
   }, [location]);
 
-  useEffect(() => {
-    handlingAuth()
-  })
-  const handlingAuth = () => {
+  // useEffect(() => {
+  //   handlingAuth()
+  // })
+  // const handlingAuth = () => {
 
-    const dataUser = JSON.parse(localStorage?.getItem("user"));
-    if (!dataUser) {
-      navigate(`${process.env.PUBLIC_URL}/auth-login`);
-      return null
-    }
+  //   const dataUser = JSON.parse(localStorage?.getItem("user"));
+  //   if (!dataUser) {
+  //     navigate(`${process.env.PUBLIC_URL}/auth-login`);
+  //     return null
+  //   }
 
-    const menuAccessUser = dataUser?.menu
+  //   const menuAccessUser = dataUser?.menu
 
-    if (menuAccessUser?.length == 0) {
-      navigate(`${process.env.PUBLIC_URL}/auth-login`);
-      return null
-    }
-  }
+  //   if (menuAccessUser?.length == 0) {
+  //     navigate(`${process.env.PUBLIC_URL}/auth-login`);
+  //     return null
+  //   }
+  // }
 
   return (
     <Routes>
@@ -223,13 +223,38 @@ const Router = () => {
         </Route>
 
         {/* Monev Route */}
-        <Route index element={<ProductionAnalytic />}></Route>
 
-        <Route path="order-production" element={<OrderProduction />}></Route>
-        <Route path="productions-analitycs" element={<OrderProduction />}></Route>
-        <Route path="production-report" element={<OrderProductionReport />}></Route>
-        <Route path="production-report/create-report" element={<CreateDailyReportProduction />}></Route>
-        <Route path="production-report/detail-report" element={<DetailReportProduction />}></Route>
+        <Route index element={
+          <PrivateRoute>
+            <ProductionAnalytic />
+          </PrivateRoute>
+        }></Route>
+
+        <Route path="order-production" element={
+          <PrivateRoute>
+            <OrderProduction />
+          </PrivateRoute>
+        }></Route>
+        <Route path="productions-analitycs" element={
+          <PrivateRoute>
+            <OrderProduction />
+          </PrivateRoute>
+        }></Route>
+        <Route path="production-report" element={
+          <PrivateRoute>
+            <OrderProductionReport />
+          </PrivateRoute>
+        }></Route>
+        <Route path="production-report/create-report" element={
+          <PrivateRoute>
+            <CreateDailyReportProduction />
+          </PrivateRoute>
+        }></Route>
+        <Route path="production-report/detail-report" element={
+          <PrivateRoute>
+            <DetailReportProduction />
+          </PrivateRoute>
+        }></Route>
 
         {/* Categories Issue */}
         <Route path="categories-issue" element={<Issue />}></Route>
