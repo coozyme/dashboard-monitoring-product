@@ -196,14 +196,14 @@ const Issue = () => {
    };
 
    const onEditSubmit = async () => {
-      const { name } = formData;
+      const { name, id } = formData;
 
       let submittedData = {
          issueName: name,
       };
 
       try {
-         await axios.put(`${BaseURL}/machine/${id}`, submittedData).then((response) => {
+         await axios.put(`${BaseURL}/categories/issues/${id}`, submittedData).then((response) => {
             handleAlert(true)
             fetchData();
             setView({ ...view, edit: false });
@@ -216,9 +216,6 @@ const Issue = () => {
          handleAlert(false)
          console.log('LOG-axios-err', error)
       }
-      // setView({ edit: false, add: false });
-      // resetForm();
-      // event.preventDefault()
    };
 
    const handleDelete = async (id) => {
@@ -454,7 +451,7 @@ const Issue = () => {
                                                    // onEditClick(item.id);
                                                    // setStatusMachine(item.status)
                                                    setFormData({
-                                                      // id: item.id,
+                                                      id: item.id,
                                                       // kode: item.kode,
                                                       name: item.issueName,
                                                       // picId: item.picId,

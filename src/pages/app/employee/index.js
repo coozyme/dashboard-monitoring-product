@@ -35,6 +35,7 @@ import EditModal from "./EditModal";
 import AddModal from "./AddModal";
 import axios from "axios";
 import { BaseURL } from "../../../config/config";
+import ResetPasswordModal from "./ResetPasswordModal";
 
 const EmployeePage = () => {
    // const { contextData } = useContext(EmployeeContext);
@@ -45,12 +46,14 @@ const EmployeePage = () => {
    const [modal, setModal] = useState({
       edit: false,
       add: false,
+      resetPassword: false,
    });
 
    const [editId, setEditedId] = useState();
    const [formData, setFormData] = useState({
       fullname: "",
       username: "",
+      password: "",
       role: "",
       roleId: 0,
       isActive: false,
@@ -136,12 +139,12 @@ const EmployeePage = () => {
    };
 
    const closeModal = () => {
-      setModal({ add: false })
+      setModal({ ...modal, add: false })
       resetForm();
    };
 
    const closeEditModal = () => {
-      setModal({ edit: false })
+      setModal({ ...modal, edit: false })
       resetForm();
    };
 
@@ -201,10 +204,15 @@ const EmployeePage = () => {
       // });
       // let index = newitems.findIndex((item) => item.id === editId);
       // newitems[index] = submittedData;
-      setModal({ edit: false });
+      setModal({ ...modal, edit: false });
       fetchDataEmployee();
       resetForm();
    };
+
+   const onResetPasswordSubmit = () => {
+      setModal({ ...modal, resetPassword: false });
+      resetForm();
+   }
 
    // function that loads the want to editted data
    const onEditClick = (id) => {
@@ -216,10 +224,27 @@ const EmployeePage = () => {
                role: item.role,
                isActive: item.isActive,
             });
-            setModal({ edit: true }, { add: false });
+            setModal({ ...modal, edit: true });
             setEditedId(id);
          }
       });
+   };
+
+   const onResetPassword = () => {
+      setModal({ ...modal, resetPassword: true });
+      // data.forEach((item) => {
+      //    if (item.id === id) {
+      //       setEditFormData({
+      //          fullname: item.fullname,
+      //          username: item.username,
+      //          role: item.role,
+      //          isActive: item.isActive,
+      //       });
+      //       setModal({ edit: true }, { add: false });
+      //       setEditedId(id);
+      //    }
+      // });
+
    };
 
    // function to change to suspend property for an item
@@ -335,36 +360,6 @@ const EmployeePage = () => {
                            <DropdownToggle color="tranparent" className="dropdown-toggle btn btn-icon btn-trigger me-n1">
                               <Icon name="more-h"></Icon>
                            </DropdownToggle>
-                           <DropdownMenu end>
-                              <ul className="link-list-opt no-bdr">
-                                 <li>
-                                    <DropdownItem
-                                       tag="a"
-                                       href="#"
-                                       onClick={(ev) => {
-                                          ev.preventDefault();
-                                          selectorDeleteUser();
-                                       }}
-                                    >
-                                       <Icon name="na"></Icon>
-                                       <span>Remove Selected</span>
-                                    </DropdownItem>
-                                 </li>
-                                 <li>
-                                    <DropdownItem
-                                       tag="a"
-                                       href="#"
-                                       onClick={(ev) => {
-                                          ev.preventDefault();
-                                          selectorSuspendUser();
-                                       }}
-                                    >
-                                       <Icon name="trash"></Icon>
-                                       <span>Suspend Selected</span>
-                                    </DropdownItem>
-                                 </li>
-                              </ul>
-                           </DropdownMenu>
                         </UncontrolledDropdown>
                      </DataTableRow>
                   </DataTableHead>
@@ -411,7 +406,62 @@ const EmployeePage = () => {
                            </DataTableRow>
                            <DataTableRow className="nk-tb-col-tools">
                               <ul className="nk-tb-actions gx-1">
-                                 <li className="nk-tb-action-hidden" onClick={() => {
+                                 <UncontrolledDropdown>
+                                    <DropdownToggle tag="a" className="btn btn-icon dropdown-toggle btn-trigger">
+                                       <Icon name="more-h"></Icon>
+                                    </DropdownToggle>
+                                    <DropdownMenu end>
+                                       <ul className="link-list-opt no-bdr">
+                                          <li>
+                                             <DropdownItem
+                                                tag="a"
+                                                href="#dropdown"
+                                                onClick={(ev) => {
+                                                   ev.preventDefault();
+                                                   // editOrder(item.orderId);
+                                                   // onRangeChange([new Date(item.startProductionDate), new Date(item.endProductionDate)])
+                                                   //    handleDetailRole(item.id)
+                                                   //    setFormData({ ...formData, id: item.id, nama: item.name })
+                                                   //    toggle("viewRole");
+                                                   onEditClick(item.id)
+                                                   setFormData({
+                                                      id: item.id,
+                                                      fullname: item.fullname,
+                                                      username: item.username,
+                                                      role: item.role,
+                                                      roleId: item.roleId,
+                                                      isActive: item.isActive,
+                                                   })
+                                                }}
+                                             >
+                                                <Icon name="pen"></Icon>
+                                                <span>Ubah</span>
+                                             </DropdownItem>
+                                          </li>
+                                          <li>
+                                             <DropdownItem
+                                                tag="a"
+                                                href="#dropdown"
+                                                onClick={(ev) => {
+                                                   ev.preventDefault();
+                                                   // editOrder(item.orderId);
+                                                   // onRangeChange([new Date(item.startProductionDate), new Date(item.endProductionDate)])
+                                                   // handleDetailRole(item.id)
+                                                   setFormData({ ...formData, id: item.id, username: item.username })
+                                                   onResetPassword()
+
+                                                   // toggle("viewRole");
+                                                   // setModal({ ...modal, resetPassword: true })
+                                                }}
+                                             >
+                                                <Icon name="security" />
+                                                <span>Reset Password</span>
+                                             </DropdownItem>
+                                          </li>
+                                       </ul>
+                                    </DropdownMenu>
+                                 </UncontrolledDropdown>
+                                 {/* <li className="nk-tb-action-hidden" onClick={() => {
                                     onEditClick(item.id)
                                     setFormData({
                                        id: item.id,
@@ -430,7 +480,7 @@ const EmployeePage = () => {
                                        direction="top"
                                        text="Edit"
                                     />
-                                 </li>
+                                 </li> */}
                                  {/* {item.status !== "Suspend" && (
                                     <React.Fragment>
                                        <li className="nk-tb-action-hidden" onClick={() => suspendUser(item.id)}>
@@ -509,6 +559,7 @@ const EmployeePage = () => {
 
             <AddModal modal={modal.add} formData={formData} setFormData={setFormData} closeModal={closeModal} onSubmit={onFormSubmit} filterStatus={filterStatus} />
             <EditModal modal={modal.edit} formData={formData} setFormData={setEditFormData} closeModal={closeEditModal} onSubmit={onEditSubmit} filterStatus={filterStatus} />
+            <ResetPasswordModal modal={modal.resetPassword} formData={formData} setFormData={setFormData} closeModal={onResetPasswordSubmit} onSubmit={onResetPasswordSubmit} filterStatus={filterStatus} />
          </Content>
       </React.Fragment>
    );

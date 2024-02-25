@@ -160,8 +160,6 @@ const AddModal = ({ modal, closeModal, onSubmit, formData, setFormData, filterSt
                     placeholder="Enter Password" />
                   {errors.password && <span className="invalid">{errors.password.message}</span>}
                 </div>
-
-
               </Col>
 
 

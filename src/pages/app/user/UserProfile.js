@@ -127,7 +127,7 @@ const UserProfile = () => {
                            <div className="data-head">
                               <h6 className="overline-title">Basics</h6>
                            </div>
-                           <div className="data-item" onClick={() => setModal(true)}>
+                           <div className="data-item">
                               <div className="data-col">
                                  <span className="data-label">Full Name</span>
                                  <span className="data-value">{userInfo?.fullname}</span>
@@ -138,7 +138,7 @@ const UserProfile = () => {
                                  </span>
                               </div> */}
                            </div>
-                           <div className="data-item" onClick={() => setModal(true)}>
+                           <div className="data-item" >
                               <div className="data-col">
                                  <span className="data-label">User Name</span>
                                  <span className="data-value">{userInfo?.username}</span>

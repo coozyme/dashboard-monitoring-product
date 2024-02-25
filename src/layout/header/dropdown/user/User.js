@@ -14,13 +14,13 @@ const User = () => {
 
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("user"));
+    const data = JSON.parse(localStorage?.getItem("user"));
     setDataUser(data);
-  }, [dataUser]);
+  }, []);
 
   const clearStorage = () => {
-    localStorage.clear();
     window.location.reload();
+    localStorage.clear();
   }
 
   return (

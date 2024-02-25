@@ -17,17 +17,27 @@ import {
 import UserProfileAside from "./UserProfileAside";
 import { set, useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { BaseURL } from "../../../config/config";
 
 const UserSetting = () => {
   const [sm, updateSm] = useState(false);
   const [mobileView, setMobileView] = useState(false);
   const [formData, setFormData] = useState({
+    username: "",
     password: "",
   })
   const [view, setView] = useState({
     changePassword: false,
   })
 
+
+  const resetForm = () => {
+    setFormData({
+      username: "",
+      password: ""
+    })
+  }
 
   // function to change the design view under 990 px
   const viewChange = () => {
@@ -41,6 +51,8 @@ const UserSetting = () => {
 
   useEffect(() => {
     viewChange();
+    const dataUser = JSON.parse(localStorage.getItem("user"));
+    setFormData({ ...formData, username: dataUser?.username })
     window.addEventListener("load", viewChange);
     window.addEventListener("resize", viewChange);
     document.getElementsByClassName("nk-header")[0].addEventListener("click", function () {
@@ -50,6 +62,8 @@ const UserSetting = () => {
       window.removeEventListener("resize", viewChange);
       window.removeEventListener("load", viewChange);
     };
+
+
   }, []);
 
 
@@ -63,6 +77,20 @@ const UserSetting = () => {
 
     // var 
     console.log("LOG-password", password)
+    const payload = {
+      username: formData.username,
+      password: formData.password,
+    }
+
+    try {
+      await axios.post(`${BaseURL}/auth/change-password`, payload).then(() => {
+        setView({ ...view, changePassword: false })
+        resetForm()
+      })
+    } catch (error) {
+      console.log('LOG-ERROR-onSubmitResetPassword', error)
+    }
+
   }
 
   const handleAlert = (isSuccess) => {
@@ -87,6 +115,23 @@ const UserSetting = () => {
       event?.preventDefault()
     }
   }
+
+  const onSubmitResetPassword = async () => {
+
+  }
+
+  // const generatePassword = async () => {
+  //   try {
+  //     await axios.get(`${BaseURL}/auth/generate-password`).then((res) => {
+  //       setDataUser({ ...dataUser, password: res.data.data.newPassword })
+  //       console.log('LOG-PASS', dataUser)
+  //     }).catch((err) => {
+  //       console.log("LOG-err", err)
+  //     });
+  //   } catch (error) {
+  //     AlertMessage()
+  //   }
+  // }
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
   return (
@@ -125,7 +170,7 @@ const UserSetting = () => {
               <Block>
                 <Card>
                   <div className="card-inner-group">
-                    <div className="card-inner">
+                    {/* <div className="card-inner">
                       <div className="between-center flex-wrap flex-md-nowrap g-3">
                         <div className="nk-block-text">
                           <h6>Save my Activity Logs</h6>
@@ -141,7 +186,7 @@ const UserSetting = () => {
                           </ul>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="card-inner">
                       <div className="between-center flex-wrap g-3">
                         <div className="nk-block-text">
@@ -153,16 +198,16 @@ const UserSetting = () => {
                             <li className="order-md-last">
                               <Button color="primary" onClick={() => handleChangePassword()} >Change Password</Button>
                             </li>
-                            <li>
+                            {/* <li>
                               <em className="text-soft text-date fs-12px">
                                 Last changed: <span>Oct 2, 2019</span>
                               </em>
-                            </li>
+                            </li> */}
                           </ul>
                         </div>
                       </div>
                     </div>
-                    <div className="card-body">
+                    {/* <div className="card-body">
                       <div className="between-center flex-wrap flex-md-nowrap g-3">
                         <div className="nk-block-text">
                           <h6>
@@ -177,7 +222,7 @@ const UserSetting = () => {
                           <Button color="primary">Disable</Button>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </Card>
               </Block>

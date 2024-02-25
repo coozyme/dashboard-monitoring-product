@@ -39,3 +39,28 @@ export const ConvertToMeter = (unit, quantity) => {
          break;
    }
 }
+
+
+export function copyToClipboard(text) {
+   var textArea = document.createElement("textarea");
+   textArea.value = text;
+
+   // Memastikan textarea di luar layar
+   textArea.style.position = "fixed";
+   textArea.style.top = 0;
+   textArea.style.left = 0;
+
+   document.body.appendChild(textArea);
+   textArea.focus();
+   textArea.select();
+
+   try {
+      var successful = document.execCommand('copy');
+      var msg = successful ? 'Berhasil disalin!' : 'Tidak berhasil disalin!';
+      console.log(msg);
+   } catch (err) {
+      console.error('Gagal menyalin:', err);
+   }
+
+   document.body.removeChild(textArea);
+}
