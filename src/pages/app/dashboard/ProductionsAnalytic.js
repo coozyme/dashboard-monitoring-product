@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import AudienceOverview from "../../../components/partials/analytics/audience-overview/AudienceOverview";
@@ -7,6 +7,7 @@ import StatusMachine from "./component/StatusMachine";
 import TrafficStatusProduction from "./component/TrafficStatusProduction";
 import TrafficIssueProduction from "./component/TrafficIssueProduction";
 import TotalCardComponent from "./component/TotalCardComponent";
+import ProductionOverview from "./component/ProductionOverview";
 import TrafficChannel from "../../../components/partials/analytics/traffic-channel/Traffic";
 import TrafficDougnut from "../../../components/partials/analytics/traffic-dougnut/TrafficDoughnut";
 import UserMap from "../../../components/partials/analytics/user-map/UserMap";
@@ -27,37 +28,88 @@ import {
 } from "../../../components/Component";
 import axios from "axios";
 import { BaseURL } from "../../../config/config";
+import { activeSubscription, orderProducksiOverviewData } from "./component/data";
+import IssueProductionOverview from "./component/IssueProductionOverview";
 
 const ProductionAnalytic = () => {
    const [sm, updateSm] = useState(false);
-   const [spinner, setSpinner] = useState(false);
-   const [dataTrafficStatus, setDataTrafficStatus] = useState({});
+   const [spinner, setSpinner] = useState({
+      dataTrafficStatus: false,
+      dataApprovalStatus: false,
+      dataStatusProductions: false,
+      // dataOrderProduksiOverview: false,
+      dataIssueProduction: false
+   });
+   const [dataTrafficStatus, setDataTrafficStatus] = useState(false);
+   const [dataStatusProductions, setDataStatusProductions] = useState(false);
    const [dataApprovalStatus, setDataApprovalStatus] = useState({});
+   // const [dataOrderProduksiOverview, setDataOrderProduksiOverview] = useState({});
+   const [dataIssueProduction, setDataIssueProduction] = useState({});
 
 
 
    const fetchStatusProductions = async () => {
       await axios.get(`${BaseURL}/dashboard/status-productions`)
          .then(res => {
-            console.log('DATA', res.data.data)
-            setDataTrafficStatus(res.data.data)
-            setSpinner(false)
+            console.log('LOG-fetchStatusProductions', res.data.data)
+            setDataStatusProductions(res.data.data)
+            setSpinner({ ...spinner, dataStatusProductions: false })
+            // setSpinner(false)
          }).catch(err => {
-            setSpinner(false)
+            setSpinner({ ...spinner, dataStatusProductions: true })
+            // setSpinner(false)
             console.log('LOG-ERR-DATA', err)
          })
    }
+
    const fetchStatusApprovalProductions = async () => {
       await axios.get(`${BaseURL}/dashboard/total-status-checklist-approval`)
          .then(res => {
             console.log('DATA', res.data.data)
             setDataApprovalStatus(res.data.data)
-            setSpinner(false)
+            // setSpinner(false)
+            setSpinner({ ...spinner, dataApprovalStatus: false })
          }).catch(err => {
-            setSpinner(false)
+            // setSpinner(false)
+            setSpinner({ ...spinner, dataApprovalStatus: true })
             console.log('LOG-ERR-DATA', err)
          })
    }
+
+   // const fetchDataOrderProductionOverview = async () => {
+   //    try {
+   //       await axios.get(`${BaseURL}/dashboard/order-produksi-overview`)
+   //          .then(res => {
+   //             console.log('DATA', res.data.data)
+   //             setDataOrderProduksiOverview(res.data.data)
+   //             console.log('LOGGG-', res.data.data)
+   //             setSpinner({ ...spinner, dataOrderProduksiOverview: false })
+   //          }).catch(err => {
+   //             setSpinner({ ...spinner, dataOrderProduksiOverview: true })
+   //             // setSpinner(false)
+   //             console.log('LOG-ERR-DATA', err)
+   //          })
+   //    } catch (error) {
+   //       setSpinner({ ...spinner, dataOrderProduksiOverview: true })
+   //       console.log('LOG-ERR-fetchDataOrderProductionOverview', err)
+   //    }
+   // }
+
+   const fetchIssueProductions = async () => {
+
+      await axios.get(`${BaseURL}/dashboard/issue-productions`)
+         .then(res => {
+            console.log('DATA', res.data.data)
+            setDataIssueProduction(res.data.data)
+            setSpinner({ ...spinner, dataIssueProduction: false })
+         }).catch(err => {
+            setSpinner({ ...spinner, dataIssueProduction: true })
+            console.log('LOG-ERR-DATA', err)
+         })
+      // console.log('LOG-0912')
+   }
+
+
 
    const handleSpineer = () => {
       return (
@@ -66,18 +118,28 @@ const ProductionAnalytic = () => {
    }
 
 
-   useState(() => {
-      setSpinner(true)
+   useEffect(() => {
+      // setSpinner({
+      //    dataTrafficStatus: true,
+      //    dataApprovalStatus: true,
+      //    dataStatusProductions: true,
+      //    dataOrderProduksiOverview: true,
+      //    dataIssueProduction: true
+      // })
       fetchStatusProductions()
       fetchStatusApprovalProductions()
+      // fetchDataOrderProductionOverview()
+      fetchIssueProductions()
       // console.log('LOG-data-DD', data)
-   })
+   }, [])
+
    return (
       <React.Fragment>
          <Head title="Analytics Dashboard" />
          <Content>
             <BlockHead size="sm">
                <div className="nk-block-between">
+                  {console.log('LOG-dataStatusProductions', dataStatusProductions)}
                   <BlockHeadContent>
                      <BlockTitle page tag="h3">
                         Production Analytics
@@ -163,26 +225,66 @@ const ProductionAnalytic = () => {
                         <ActiveUser />
                      </PreviewAltCard>
                   </Col> */}
-                  <Col lg="3" xxl="3">
-                     <PreviewAltCard className="h-100">
-                        <TotalCardComponent key="00123" title="Total Order Produksi" total={dataTrafficStatus?.totalData} textInfo={`${dataTrafficStatus?.startDate} - ${dataTrafficStatus?.endDate}`} />
+                  {/* <Col xxl="6"> */}
+                  {/* <Row className="g-gs"> */}
+                  {/* <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <ProductionOverview />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <IssueProductionOverview />
+                     </PreviewAltCard>
+                  </Col> */}
+                  {/* <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <ProductionOverview />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <ProductionOverview />
+                     </PreviewAltCard>
+                  </Col> */}
+                  <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <ProductionOverview />
+                     </PreviewAltCard>
+                  </Col>
+                  <Col sm="3" lg="6" xxl="3">
+                     <PreviewAltCard>
+                        <IssueProductionOverview />
                      </PreviewAltCard>
                   </Col>
                   <Col lg="3" xxl="3">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent key="0012" title="Total Laporan" total={dataApprovalStatus.totalChecklistApproval} textInfo={dataApprovalStatus.dateRange} />
+                        {
+                           spinner.dataStatusProductions ?
+                              // handleSpineer()
+                              < Spinner color="primary" />
+                              :
+                              <TotalCardComponent key="00123" title="Total Order Produksi" total={dataStatusProductions?.totalData} textInfo={`${dataStatusProductions?.startDate} - ${dataStatusProductions?.endDate}`} />
+
+                        }
                      </PreviewAltCard>
                   </Col>
                   <Col lg="3" xxl="3">
                      <PreviewAltCard className="h-100">
-                        <TotalCardComponent key="00343" title="Total Laporan Approved" total={dataApprovalStatus.approved} textInfo={dataApprovalStatus.dateRange} />
+                        {
+                           spinner.dataApprovalStatus ?
+                              // handleSpineer()
+                              < Spinner color="primary" />
+                              :
+                              <TotalCardComponent key="0012" title="Total Laporan" total={dataApprovalStatus.totalChecklistApproval} textInfo={dataApprovalStatus.dateRange} />
+                        }
                      </PreviewAltCard>
                   </Col>
-                  <Col lg="3" xxl="3">
-                     <PreviewAltCard className="h-100">
-                        <TotalCardComponent key="01242" title="Total Laporan Not Approved" total={dataApprovalStatus.notApproved} textInfo={dataApprovalStatus.dateRange} />
-                     </PreviewAltCard>
-                  </Col>
+
+                  {/* <Col lg="3" xxl="3">
+                     
+                  </Col> */}
+
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
                         <StatusMachine />
@@ -190,15 +292,47 @@ const ProductionAnalytic = () => {
                   </Col>
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
-                        {spinner ? handleSpineer() : <TrafficStatusProduction dataStatus={dataTrafficStatus} />}
-                        {/* // <TrafficStatusProduction dataStatus={dataTrafficStatus} /> */}
+                        {
+                           spinner.dataStatusProductions
+                              ?
+                              <Spinner color="primary" />
+                              :
+                              <TrafficStatusProduction />
+                        }
                      </PreviewAltCard>
                   </Col>
                   <Col md="6" lg="5" xxl="3">
                      <PreviewAltCard className="h-100">
-                        <TrafficIssueProduction />
+                        {
+                           spinner.dataIssueProduction ?
+                              <Spinner color="primary" />
+                              :
+                              <TrafficIssueProduction />
+                        }
                      </PreviewAltCard>
                   </Col>
+
+                  <Col lg="3" xxl="3">
+                     <PreviewAltCard>
+                        {
+                           spinner.dataApprovalStatus ?
+                              // handleSpineer()
+                              < Spinner color="primary" />
+                              :
+                              <TotalCardComponent key="00343" title="Total Laporan Approved" total={dataApprovalStatus.approved} textInfo={dataApprovalStatus.dateRange} />
+                        }
+                     </PreviewAltCard>
+                     <PreviewAltCard >
+                        {
+                           spinner.dataApprovalStatus ?
+                              < Spinner color="primary" />
+                              :
+                              <TotalCardComponent key="01242" title="Total Laporan Not Approved" total={dataApprovalStatus.notApproved} textInfo={dataApprovalStatus.dateRange} />
+                        }
+                     </PreviewAltCard>
+                  </Col>
+
+
 
                   {/* <Col md="6" xxl="3">
                      <PreviewAltCard className="h-100">

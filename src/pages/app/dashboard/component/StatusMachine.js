@@ -56,9 +56,9 @@ const StatusMachine = () => {
          </div>
          {
             itemMachine.length > 0 ?
-               itemMachine?.map((item) => {
+               itemMachine?.map((item, idx) => {
                   return (
-                     <div className="analytic-wp">
+                     <div className="analytic-wp" key={idx}>
                         <div className="analytic-wp-group g-3">
                            <div className="analytic-data analytic-wp-data mt-2">
                               <div className="title">

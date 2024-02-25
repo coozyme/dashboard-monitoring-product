@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DropdownToggle, DropdownMenu, UncontrolledDropdown, DropdownItem, Spinner } from "reactstrap";
 // import { TCDoughnut } from "../../../../components/partials/charts/analytics/AnalyticsCharts";
 // import { TrafficChannelDoughnutData } from "./data";
@@ -7,34 +7,32 @@ import { TCDoughnut } from './Chart';
 import axios from "axios";
 const TrafficIssueProduction = () => {
    const [traffic, setTraffic] = useState("30");
-   const [data, setData] = useState([]);
-   const [spinner, setSpinner] = useState(false);
+   const [data, setData] = useState(false);
+   const [spinner, setSpinner] = useState(true);
 
 
    const fetchIssueProductions = async () => {
+      try {
+         await axios.get(`${BaseURL}/dashboard/issue-productions`)
+            .then(res => {
+               console.log('DATA', res.data.data)
+               setData(res.data.data)
+               setSpinner(false)
+            }).catch(err => {
+               setSpinner(false)
+               console.log('LOG-ERR-DATA', err)
+            })
 
-      await axios.get(`${BaseURL}/dashboard/issue-productions`)
-         .then(res => {
-            console.log('DATA', res.data.data)
-            setData(res.data.data)
-            setSpinner(false)
-         }).catch(err => {
-            setSpinner(false)
-            console.log('LOG-ERR-DATA', err)
-         })
+      } catch (error) {
+         setSpinner(false)
+         console.log('LOG-ERR-fetchIssueProductions', err)
+      }
    }
 
-   useState(() => {
-      setSpinner(true)
+   useEffect(() => {
       fetchIssueProductions()
-      console.log('LOG-data-DD', data)
-   })
+   }, [])
 
-   const handleSpineer = () => {
-      return (
-         <Spinner color="primary" />
-      )
-   }
 
    return (
       <React.Fragment>
@@ -88,26 +86,31 @@ const TrafficIssueProduction = () => {
          </div>
          <div className="traffic-channel">
             <div className="traffic-channel-doughnut-ck">
-               {spinner ? handleSpineer() :
+               {
+                  spinner
+                     ?
+                     <Spinner color="primary" />
+                     :
+                     <TCDoughnut state={traffic} dataSet={data} className="analytics-doughnut"></TCDoughnut>
 
-                  <TCDoughnut state={traffic} dataSet={data} className="analytics-doughnut"></TCDoughnut>
                }
             </div>
             <div className="traffic-channel-group g-2">
 
-               {data?.dataView?.length > 0 && data?.dataView?.map((item, index) => {
+               {data?.dataView?.length > 0 ? data?.dataView?.map((item, index) => {
                   return (
                      <div className="traffic-channel-data">
                         <div className="title">
-                           <span className="dot dot-lg sq" style={{ background: item.color }}></span>
-                           <span>{item.issue}</span>
+                           <span className="dot dot-lg sq" style={{ background: item?.color }}></span>
+                           <span>{item?.issue}</span>
                         </div>
                         <div className="amount">
-                           {item.count} <small>{item.percent}</small>
+                           {item?.count} <small>{item?.percent}</small>
                         </div>
                      </div>
                   )
-               })}
+               }) : <Spinner color="primary" />
+               }
                {/* <div className="traffic-channel-data">
                   <div className="title">
                      <span className="dot dot-lg sq" style={{ background: "#798bff" }}></span>

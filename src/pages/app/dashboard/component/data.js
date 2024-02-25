@@ -87,3 +87,77 @@ export var TrafficChannelDoughnutData = {
       },
    ]
 };
+
+
+export const activeSubscription = {
+   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+   dataUnit: "USD",
+   stacked: true,
+   datasets: [
+      {
+         label: "Active User",
+         barPercentage: 0.7,
+         categoryPercentage: 0.7,
+         backgroundColor: [
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 1)",
+         ],
+         data: [8200, 7800, 9500, 5500, 9200, 9690],
+      },
+   ],
+};
+
+export const orderProducksiOverviewData = {
+   labels: ["Jan", "Feb"],
+   dataUnit: "USDss",
+   stacked: true,
+   datasets: [
+      {
+         label: "Active User",
+         barPercentage: 0.7,
+         categoryPercentage: 0.7,
+         backgroundColor: [
+            // "rgba(133, 79, 255, 0.2)",
+            // "rgba(133, 79, 255, 0.2)",
+            // "rgba(133, 79, 255, 0.2)",
+            // "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 0.2)",
+            "rgba(133, 79, 255, 1)",
+         ],
+         data: [
+            "7",
+            "10"
+         ],
+      },
+   ],
+};
+// export const orderProducksiOverviewData = {
+//    "total": 17,
+//    "percentage": "30.00",
+//    "isUp": true,
+//    "labels": [
+//       "Jan",
+//       "Feb"
+//    ],
+//    "dataUnit": "Quantity",
+//    "stacked": true,
+//    "datasets": [
+//       {
+//          "label": "Order Produksi",
+//          "barPercentage": 0.7,
+//          "categoryPercentage": 0.7,
+//          "backgroundColor": [
+//             "rgba(133, 79, 255, 0.2)",
+//             "rgba(133, 79, 255, 1)"
+//          ],
+//          "data": [
+//             7,
+//             10
+//          ]
+//       }
+//    ]
+// };
