@@ -44,7 +44,7 @@ const IssueProductionOverview = () => {
                   iconClass="card-hint"
                   direction="left"
                   id="Tooltip-3"
-                  text="Since last month"
+                  text={`Data ${data?.year}`}
                />
             </div>
          </div>

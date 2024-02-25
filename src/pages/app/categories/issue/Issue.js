@@ -25,7 +25,7 @@ import ProductH from "../../../../images/product/h.png";
 import Dropzone from "react-dropzone";
 import { Modal, ModalBody } from "reactstrap";
 import { RSelect } from "../../../../components/Component";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import axios from "axios";
 import { BaseURL } from "../../../../config/config";
 import Swal from "sweetalert2";
@@ -202,16 +202,20 @@ const Issue = () => {
          issueName: name,
       };
 
-
-      await axios.put(`${BaseURL}/machine/${id}`, submittedData).then((response) => {
-         handleAlert(true)
-         fetchData();
-         setView({ ...view, edit: false });
-         resetForm();
-      }).catch((error) => {
+      try {
+         await axios.put(`${BaseURL}/machine/${id}`, submittedData).then((response) => {
+            handleAlert(true)
+            fetchData();
+            setView({ ...view, edit: false });
+            resetForm();
+         }).catch((error) => {
+            handleAlert(false)
+            console.log('LOG-axios-err', error)
+         })
+      } catch (error) {
          handleAlert(false)
          console.log('LOG-axios-err', error)
-      })
+      }
       // setView({ edit: false, add: false });
       // resetForm();
       // event.preventDefault()
