@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import menu from "./MenuData";
-// import menu from "./MenuMonev";
+// import menu from "./MenuData";
+import menu from "./MenuMonev";
 import menuMonevStaff from "./MenuMonevStaff";
 import menuManager from "./MenuMonevManager";
 import menuOperator from "./MenuMonevOperator";
@@ -287,8 +287,8 @@ const Menu = ({ sidebarToggle, mobileView }) => {
     if (role === 1) {
       setMenuData(menuOperator)
     } else if (role === 2) {
-      // setMenuData(menuMonevStaff)
-      setMenuData(menu)
+      setMenuData(menuMonevStaff)
+      // setMenuData(menu)
     } else if (role === 6) {
       setMenuData(menuManager)
     } else {
